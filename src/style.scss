@@ -1,0 +1,19 @@
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: (
+    'primary': (
+      'base': green,
+    ),
+  )
+);
+
+html{
+  background-color: #c5d4d9;
+}
+.el-card{
+  background-color:#fff
+}
+
+:root {
+  --el-color-primary: #22b7e9;
+  --el-text-color-primary:#282828
+}

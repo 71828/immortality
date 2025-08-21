@@ -4,7 +4,7 @@ import mainApp from './view/main.vue'
 
 <template>
 
-  <mainApp msg="Vite + Vue" />
+  <mainApp  />
 </template>
 
 <style scoped>
