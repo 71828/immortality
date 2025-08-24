@@ -1,28 +1,33 @@
 <script setup >
     import playResources from './playResources.vue'
-    import playAction from './action.vue'
+    import action from './action.vue'
+    import actionDetail from './actionDetail.vue'
 </script>
 <template>
     <div class="main-content">
-        <div>
-            <playResources/>
-        </div>
-
-        <el-card  :body-style="{ padding: '20px' }" style="width: 1000px;">
-            <playAction/>
-        </el-card>
+            <div class="card">
+                <playResources/>
+            </div>
+            <div class="card" style="flex: 1;">
+                <action />
+            </div>
+            <div class="card" >
+                <actionDetail />
+            </div>
+            
+      
     </div>
 </template>
 <style lang="scss" scoped>
     .main-content{
         display: flex;
         padding: 24px;
-        gap: 24px;
+        gap: 32px;
     }
-        .card{
-        border: 1px solid #999;
-        border-radius: 8px;
-        
-        padding: 12px;
+    .card{
+        border-radius: 4px;
+        padding: 24px;
+        background-color: #101118;
+
     }
 </style>

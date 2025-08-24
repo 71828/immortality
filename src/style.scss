@@ -1,19 +1,16 @@
-@forward 'element-plus/theme-chalk/src/common/var.scss' with (
-  $colors: (
-    'primary': (
-      'base': green,
-    ),
-  )
-);
 
 html{
-  background-color: #c5d4d9;
+  background-color: #13151b;
 }
 .el-card{
-  background-color:#fff
+  // background: radial-gradient(ellipse at right top, #00458f8f 0%, #151419 45%, #151419 100%);
+  // border: 0;
+  // color: #ccc;
+  // border-radius: 12px;
+  // box-shadow: 0.063em 0.75em 1.563em rgba(0, 0, 0, 0.18);
 }
 
 :root {
-  --el-color-primary: #22b7e9;
+  --el-color-primary: #151419 ;
   --el-text-color-primary:#282828
 }
