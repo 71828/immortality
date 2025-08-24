@@ -27,7 +27,7 @@ function toAction(item) {
                     </div>
                     <div class="content" >
                         <div>
-                            <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1) }}/{{item.Proficiency.capacity }}</span>
+                           熟练度: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1) }}/{{item.Proficiency.capacity }}</span>
                         </div>
                         <div class="perScond" v-if="item.isExecution">+{{ item.Proficiency.perScond  }}</div>
                     </div>
@@ -47,6 +47,11 @@ function toAction(item) {
                         <el-icon class="icon" v-else ><VideoPlay /></el-icon>
                     </div>
                     <div class="desc" v-show="item.expand">
+                        <div class="cell">
+                            <div class="label">消耗   <span class="mark1">精力 </span> 每秒 </div>
+                            <div class="value"></div>
+                        </div>
+                        <div class="dvi"></div>
                         <div class="cell">
                             <div class="label">完成此动作提升   <span class="mark">气血 </span> +1 </div>
                             <div class="value"></div>
@@ -86,9 +91,18 @@ function toAction(item) {
             transition: .3s;
             font-size: 14px;
             padding: 12px;
-            line-height: 33px;
+            line-height: 21px;
+               border-left: 2px solid #171b23;
+                    border-right: 2px solid #171b23;
+                    border-bottom: 2px solid #171b23;
+            .dvi{
+                border-bottom: 1px solid #23252f;
+            }
             .mark{
                 color: #fc263f;
+            }
+            .mark1{
+                color: #ffb730;
             }
         }
         &.isExecution{
