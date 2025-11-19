@@ -12,12 +12,12 @@ const list1 = ['QB', 'EP', 'MP']
             <div class="list">
                 <div class="item">
                     <div class="cell">
-                        <div class="label">修为：{{ playAttr.EXP.levelName }}</div>
+                        <div class="label">xx：{{ playAttr.EXP.levelName }}</div>
                         <!-- <div class="value">{{ playAttr.EXP.val }}</div> -->
                     </div>
                 </div>
                 <div class="item">
-                    <div class="label">寿元：{{ playAttr.EXP.levelName }}</div>
+                    <div class="label">ss：{{ playAttr.EXP.levelName }}</div>
                     <!-- <div class="value">{{ playAttr.EXP.val }}</div> -->
                 </div>
             </div>

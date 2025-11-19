@@ -27,7 +27,7 @@ function toAction(item) {
                     </div>
                     <div class="content" >
                         <div>
-                           熟练度: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1) }}/{{item.Proficiency.capacity }}</span>
+                           sld: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1) }}/{{item.Proficiency.capacity }}</span>
                         </div>
                         <div class="perScond" v-if="item.isExecution">+{{ item.Proficiency.perScond  }}</div>
                     </div>

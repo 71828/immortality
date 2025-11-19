@@ -23,6 +23,7 @@
         display: flex;
         padding: 24px;
         gap: 32px;
+        border: 1px solid #101118;
     }
     .card{
         border-radius: 4px;

@@ -7,10 +7,10 @@ export const playAttribute = defineStore('playAttribute', () => {
   const EXP = ref({
     name:'修为值',
     val:0,
-    levelName:'凡人'
+    levelName:'fr'
   })
   const QB = ref({
-    name:'气血',
+    name:'qx',
     val:100,
     max:100,
     ecovery‌:0,
@@ -19,7 +19,7 @@ export const playAttribute = defineStore('playAttribute', () => {
   })
 
   const EP = ref({
-    name:'精力',
+    name:'jl',
     val:100,
     max:100,
     ecovery‌:0,

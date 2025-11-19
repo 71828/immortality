@@ -15,7 +15,7 @@ export const actionData = defineStore('actionData', () => {
   const actionList = ref([{
         actionId:1,
         isExecution:false,
-        name:'砍柴',
+        name:'cut',
         Proficiency:{
             level:0,
             val:0,
