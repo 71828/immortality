@@ -27,10 +27,13 @@ function toAction(item) {
                     </div>
                     <div class="content">
                         <div>
-                            熟练度: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1)
+                            s: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1)
                                 }}/{{ item.Proficiency.capacity.toFixed(1) }}</span>
                         </div>
-                        <div class="perSecond" v-if="item.isExecution">+{{ item.Proficiency.perSecond }}</div>
+                        <div class="perSecond" v-if="item.isExecution">
+                            
+                            <span>{{item.Proficiency.efficiency}}</span>
+                            +{{ item.Proficiency.perSecond }}</div>
                     </div>
                     <div class="progress">
                         <div class="bar-wrap">

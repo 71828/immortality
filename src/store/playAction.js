@@ -1,3 +1,4 @@
+import { fa } from 'element-plus/es/locales.mjs'
 import { defineStore } from 'pinia'
 import {ref,computed} from 'vue'
 
@@ -13,16 +14,17 @@ export const executionList = defineStore('executionList', () => {
 
 export const actionData = defineStore('actionData', () => {
   const actionList = ref([{
-        actionId:1,
-        isExecution:false,
-        name:'cut',
-        Proficiency:{
-            level:0,
-            val:0,
-            perSecond:1,
-            capacity:3,
+        id:1,
+        isExecution:false,   //执行标识符
+        name:'cut',        //名称
+        Proficiency:{      //动作经验对象 
+            level:0,       //动作等级
+            val:0,         //当前动作经验值
+            perSecond:1,    //每秒变动值
+            capacity:3,     //当前经验上限
             levelRate:0.2,
             maxLevel:0,
+            efficiency:100,    //执行效率 0-100
         },
         frameChanges:[{
           attrTarget:'EP',

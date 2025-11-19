@@ -22,28 +22,40 @@ function mainLoop() {
   regeneration()
 }
 function regeneration() {
-  const list = ['QB','EP','MP',]
-  list.map(m=>{
-    if (playAttr[m].val<playAttr[m].max) {
-      const val = playAttr[m].perSecond / 100      
-       playAttr[m].val=((playAttr[m].val+val)<playAttr[m].max)?playAttr[m].val+val:playAttr[m].max
+  const list = ['QB', 'EP', 'MP',]
+  list.map(m => {
+
+    //属性自动回复
+    if (playAttr[m].val < playAttr[m].max) {
+      const val = playAttr[m].perSecond / 100
+      playAttr[m].val = ((playAttr[m].val + val) < playAttr[m].max) ? playAttr[m].val + val : playAttr[m].max
     }
   })
 }
 function execution() {
   if (executionList().list.length) {
     const item = executionList().list[0]
-    let { level, val, perSecond, capacity, levelRate, maxLevel, } = item.Proficiency
+    let { level, val, perSecond, capacity, levelRate, maxLevel, efficiency } = item.Proficiency
     const { frameChanges, levelChanges } = item
+    const notExecution = frameChanges.find(m => ((playAttr[m.attrTarget][m.keyTarget] * 100 + m.perSecond) < 0))
+    if (notExecution) {
+
+      item.Proficiency.efficiency = (playAttr[notExecution.attrTarget].perSecond / Math.abs(notExecution.perSecond)).toFixed(2) * 100
+      return
+    } else {
+      //item.Proficiency.efficiency = 100
+    }
     val += perSecond / 100
+
 
     if (val < capacity) {
       item.Proficiency.val = Number(val);
       if (frameChanges.length) {
         frameChanges.map(m => {
+          if ((playAttr[m.attrTarget][m.keyTarget] * 100 + m.perSecond) > 0) {
+            playAttr[m.attrTarget][m.keyTarget] = (playAttr[m.attrTarget][m.keyTarget] * 100 + m.perSecond) / 100
+          }
 
-          
-          playAttr[m.attrTarget][m.keyTarget] = (playAttr[m.attrTarget][m.keyTarget]*100+m.perSecond )/100
         })
       }
     } else {
