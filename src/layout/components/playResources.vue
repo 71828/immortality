@@ -8,20 +8,18 @@ const list1 = ['QB', 'EP', 'MP']
 </script>
 <template>
     <div>
-        <div class="card">
+        <!-- <div class="card">
             <div class="list">
                 <div class="item">
                     <div class="cell">
-                        <div class="label">xx：{{ playAttr.EXP.levelName }}</div>
-                        <!-- <div class="value">{{ playAttr.EXP.val }}</div> -->
+                        <div class="label">修为：{{ playAttr.EXP.levelName }}</div>
                     </div>
                 </div>
                 <div class="item">
-                    <div class="label">ss：{{ playAttr.EXP.levelName }}</div>
-                    <!-- <div class="value">{{ playAttr.EXP.val }}</div> -->
+                    <div class="label">寿元：{{ playAttr.EXP.levelName }}</div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="card">
             <div class="list">
                 <template v-for="(item, index) in list1" :key="index">

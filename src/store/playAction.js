@@ -19,18 +19,18 @@ export const actionData = defineStore('actionData', () => {
         Proficiency:{
             level:0,
             val:0,
-            perScond:1,
+            perSecond:1,
             capacity:3,
             levelRate:0.2,
             maxLevel:0,
         },
         frameChanges:[{
-          attrTarget:'MP',
-          keyTarget:'max',
-          perScond:1,
+          attrTarget:'EP',
+          keyTarget:'val',
+          perSecond:-3,
         },],
         levelChanges:[{
-          attrTarget:'HP',
+          attrTarget:'QB',
           keyTarget:'max',
           perLevel:1,
         },]

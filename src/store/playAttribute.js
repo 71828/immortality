@@ -10,19 +10,19 @@ export const playAttribute = defineStore('playAttribute', () => {
     levelName:'fr'
   })
   const QB = ref({
-    name:'qx',
-    val:100,
-    max:100,
-    ecovery‌:0,
+    name:'气血',
+    val:5,
+    max:5,
+    perSecond:1,
     visable:true,
     haveMax:true,
   })
 
   const EP = ref({
-    name:'jl',
-    val:100,
-    max:100,
-    ecovery‌:0,
+    name:'精力',
+    val:10,
+    max:10,
+    perSecond:1,
     visable:true,
     haveMax:true,
   })
@@ -30,7 +30,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'法力',
     val:100,
     max:100,
-    ecovery‌:0,
+    perSecond:1,
     visable:false,
     haveMax:true,
   })
@@ -38,7 +38,6 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'真元',
     val:0,
     max:0,
-    ecovery‌:0,
     visable:false,
     haveMax:false,
   })
@@ -46,7 +45,6 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'魅力',
     val:0,
     max:0,
-    ecovery‌:0,
     visable:false,
     haveMax:false,
   })
@@ -54,7 +52,6 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'悟性',
     val:0,
     max:0,
-    ecovery‌:0,
     visable:false,
     haveMax:false,
   })
@@ -62,7 +59,6 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'神识',
     val:0,
     max:0,
-    ecovery‌:0,
     visable:false,
     haveMax:false,
   })
@@ -70,7 +66,6 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'元神',
     val:0,
     max:0,
-    ecovery‌:0,
     visable:false,
     haveMax:false,
   })
