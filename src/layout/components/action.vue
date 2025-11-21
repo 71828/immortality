@@ -5,20 +5,23 @@ const actionList = actionData().actionList
 function toAction(item) {
     if (item.isExecution) {
         executionList().list = []
+        item.isExecution = false
     } else {
+        actionList.map(item=>{
+            item.isExecution=false
+        })
+        item.isExecution = true
+        executionList().list = []
         executionList().list.push(item)
     }
-    item.isExecution = !item.isExecution
 }
 
 </script>
 <template>
     <div class="">
-
         <div class="aciton-list">
             <template v-for="(item, index) in actionList" :key="index">
                 <div class="item" :class="{ isExecution: item.isExecution, expand: item.expand }" @click="toAction(item)">
-
                     <div class="head">
                         <div class="name">{{ item.name }} </div>
                         <div>{{ item.Proficiency.level }}
@@ -32,7 +35,7 @@ function toAction(item) {
                         </div>
                         <div class="perSecond" v-if="item.isExecution">
                             
-                            <span>{{item.Proficiency.efficiency}}</span>
+                            <!-- <span>{{item.Proficiency.efficiency}}</span> -->
                             +{{ item.Proficiency.perSecond }}</div>
                     </div>
                     <div class="progress">
@@ -77,7 +80,10 @@ function toAction(item) {
 
     min-height: 500px;
     overflow: visible;
-
+    display: flex;
+    display: flex;
+	align-items: flex-start;
+    gap: 30px;
     .item {
         background-color: #171b23;
         width: 200px;
@@ -86,7 +92,7 @@ function toAction(item) {
         border-radius: 16px;
         box-shadow: 0px 0px 20px 10px #171b2304;
         cursor: pointer;
-        border: 2px solid #171b23;
+        border: 2px solid #585956;
         transition: .3s;
         position: relative;
 
@@ -126,14 +132,7 @@ function toAction(item) {
                 border-bottom: 2px solid #7d96f148;
             }
         }
-        &:hover {
-            border: 2px solid #7a96fa45;
-            .desc {
-                border-left: 2px solid #7d96f148;
-                border-right: 2px solid #7d96f148;
-                border-bottom: 2px solid #7d96f148;
-            }
-        }
+
 
         &.expand {
             border-bottom-left-radius: 0px;

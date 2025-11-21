@@ -13,7 +13,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'q',
     val:5,
     max:5,
-    perSecond:1,
+    perSecond:0.1,
     visable:true,
     haveMax:true,
   })
@@ -22,7 +22,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     name:'j',
     val:10,
     max:10,
-    perSecond:1,
+    perSecond:0.1,
     visable:true,
     haveMax:true,
   })

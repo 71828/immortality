@@ -13,7 +13,8 @@ export const executionList = defineStore('executionList', () => {
 })
 
 export const actionData = defineStore('actionData', () => {
-  const actionList = ref([{
+  const actionList = ref([
+    {
         id:1,
         isExecution:false,   //执行标识符
         name:'cut',        //名称
@@ -29,6 +30,31 @@ export const actionData = defineStore('actionData', () => {
         frameChanges:[{
           attrTarget:'EP',
           keyTarget:'val',
+          perSecond:-1.1,
+        },],
+        levelChanges:[{
+          attrTarget:'QB',
+          keyTarget:'max',
+          perLevel:1,
+        },]
+
+    },
+    {
+        id:2,
+        isExecution:false,   
+        name:'cy',        
+        Proficiency:{     
+            level:0,       
+            val:0,         
+            perSecond:1,   
+            capacity:3,    
+            levelRate:0.2,
+            maxLevel:0,
+            efficiency:100,    
+        },
+        frameChanges:[{
+          attrTarget:'EP',
+          keyTarget:'val',
           perSecond:-3,
         },],
         levelChanges:[{
@@ -37,7 +63,10 @@ export const actionData = defineStore('actionData', () => {
           perLevel:1,
         },]
 
-    }])
+    },
+  
+  
+  ])
   return { 
     actionList,  
 

@@ -35,12 +35,14 @@ function regeneration() {
 function execution() {
   if (executionList().list.length) {
     const item = executionList().list[0]
-    let { level, val, perSecond, capacity, levelRate, maxLevel, efficiency } = item.Proficiency
+    let { level, val, perSecond, capacity, levelRate, maxLevel } = item.Proficiency
     const { frameChanges, levelChanges } = item
     const notExecution = frameChanges.find(m => ((playAttr[m.attrTarget][m.keyTarget] * 100 + m.perSecond) < 0))
     if (notExecution) {
 
-      item.Proficiency.efficiency = (playAttr[notExecution.attrTarget].perSecond / Math.abs(notExecution.perSecond)).toFixed(2) * 100
+      //item.Proficiency.efficiency = (playAttr[notExecution.attrTarget].perSecond / Math.abs(notExecution.perSecond)).toFixed(2) * 100
+      // item.isExecution=false
+      // executionList().list = []
       return
     } else {
       //item.Proficiency.efficiency = 100
