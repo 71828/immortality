@@ -77,6 +77,7 @@ function toAction(item) {
 </template>
 <style lang="scss" scoped>
 .aciton-list {
+
     min-height: 500px;
     overflow: visible;
     display: flex;
