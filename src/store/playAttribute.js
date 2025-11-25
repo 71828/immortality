@@ -27,7 +27,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     haveMax:true,
   })
     const MP = ref({
-    name:'法力',
+    name:'ff',
     val:100,
     max:100,
     perSecond:1,
@@ -35,35 +35,35 @@ export const playAttribute = defineStore('playAttribute', () => {
     haveMax:true,
   })
   const SE = ref({
-    name:'真元',
+    name:'zy',
     val:0,
     max:0,
     visable:false,
     haveMax:false,
   })
   const CHA = ref({
-    name:'魅力',
+    name:'ml',
     val:0,
     max:0,
     visable:false,
     haveMax:false,
   })
   const CP = ref({
-    name:'悟性',
+    name:'wx',
     val:0,
     max:0,
     visable:false,
     haveMax:false,
   })
   const SS = ref({
-    name:'神识',
+    name:'ss',
     val:0,
     max:0,
     visable:false,
     haveMax:false,
   })
   const SP = ref({
-    name:'元神',
+    name:'ys',
     val:0,
     max:0,
     visable:false,

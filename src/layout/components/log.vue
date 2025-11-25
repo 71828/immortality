@@ -11,9 +11,9 @@ const logs = log()
 
             <div class="title">rz</div>
             <div class="list">
-                <div class="item" v-for="(item, index) in logs.list" :key="index">
-                    <div class="name"> {{ item.name }}</div>
-                    <div class="num" v-if="item.target">{{ item.val }}/{{ item.target }}</div>
+                <div class="item" v-for="(item, index) in logs.displayList" :key="index">
+                    <div class="date"> {{ item.date }}</div>
+                    <div class="title" >{{ item.title}}</div>
                 </div>
             </div>
         </div>

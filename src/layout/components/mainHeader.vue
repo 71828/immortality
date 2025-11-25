@@ -1,4 +1,4 @@
-<script setup >import {computed, ref} from 'vue'
+<script setup >
 
 import { useMainStore } from '@/store/store'
 
@@ -8,7 +8,7 @@ import { useMainStore } from '@/store/store'
 </script>
 <template>
     <div class="head">
-       <!-- 道历 {{useMainStore().fromatDay}} -->
+       dl {{useMainStore().fromatDay}}
     </div>
 </template>
 <style lang="scss" scoped>

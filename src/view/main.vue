@@ -4,6 +4,7 @@ import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { useMainStore } from '@/store/store'
 import { playAttribute } from '@/store/playAttribute'
 import { executionList } from '@/store/playAction'
+import { log } from '@/store/log'
 
 const playAttr = playAttribute()
 import layout from '../layout/index.vue'
@@ -69,8 +70,19 @@ function execution() {
       if (levelChanges.length) {
         levelChanges.map(m => {
           playAttr[m.attrTarget][m.keyTarget] += m.perLevel
+
+          if (m.logForId) {
+            log().addLog(m.logForId)
+          }
+
         })
       }
+      if (item.levelChanges) {
+        
+      }
+      
+
+
     }
 
 

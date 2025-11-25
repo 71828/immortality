@@ -22,7 +22,7 @@ const alltask = task()
 
 
 
-</template>
+</template> 
 <style lang="scss" scoped>
 .card {
     background-color: #1e2029;

@@ -36,6 +36,7 @@ export const actionData = defineStore('actionData', () => {
           attrTarget:'QB',
           keyTarget:'max',
           perLevel:1,
+          logForId:1
         },]
 
     },
