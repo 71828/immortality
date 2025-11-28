@@ -3,7 +3,7 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { useMainStore } from '@/store/store'
 import { playAttribute } from '@/store/playAttribute'
-import { executionList } from '@/store/playAction'
+import { executionList,actionData } from '@/store/playAction'
 import { log } from '@/store/log'
 
 const playAttr = playAttribute()
@@ -15,6 +15,11 @@ function init() {
     mainDate.increment()
     mainLoop()
   }, 10);
+
+if (actionData().actionList.length==0) {
+    actionData().init()
+}
+
 }
 
 
@@ -73,6 +78,9 @@ function execution() {
 
           if (m.logForId) {
             log().addLog(m.logForId)
+          }
+          if (m.levelCallback) {
+            m.levelCallback(item)
           }
 
         })

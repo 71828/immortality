@@ -9,7 +9,6 @@ export const log = defineStore('log', () => {
 
 
   const addLog = function (id) {
-    console.log(id, displayList.value);
     let log ={
       date :useMainStore().fromatDay
     }

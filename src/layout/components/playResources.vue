@@ -33,7 +33,7 @@ const list1 = ['QB', 'EP', 'MP']
 
                         <div class="line">
                             <div class="line-progress" :class="[item]"
-                                :style="{ width: Number(((playAttr[item].val / playAttr[item].max) * 100).toFixed(1)) + '%' }">
+                                :style="{ width: Number(((playAttr[item].val / playAttr[item].max) * 100)) + '%' }">
                             </div>
                         </div>
                     </div>
@@ -41,7 +41,6 @@ const list1 = ['QB', 'EP', 'MP']
             </div>
         </div>
     </div>
-
 
 
 </template>
@@ -64,9 +63,10 @@ const list1 = ['QB', 'EP', 'MP']
             z-index: 1;
             border-radius: 50px;
             margin-top: 8px;
-            box-shadow: 0px 0px 20px 10px #101118;
+            // box-shadow: 0px 0px 20px 10px #101118;
             border: 2px solid #101118;
             .line-progress {
+                overflow: hidden;
                 width: 0%;
                 height: 100%;
                 position: absolute;
