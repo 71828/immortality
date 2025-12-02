@@ -1,16 +1,64 @@
 
-html{
-  background-color: #13151b;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.el-card{
-  // background: radial-gradient(ellipse at right top, #00458f8f 0%, #151419 45%, #151419 100%);
-  // border: 0;
-  // color: #ccc;
-  // border-radius: 12px;
-  // box-shadow: 0.063em 0.75em 1.563em rgba(0, 0, 0, 0.18);
+
+html {
+  background-color: #0f1117;
+  color: #e6edf3;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0f1117;
+  color: #e6edf3;
 }
 
 :root {
-  --el-color-primary: #151419 ;
-  --el-text-color-primary:#282828
+  --el-color-primary: #58a6ff;
+  --el-color-primary-light-3: #388bfd;
+  --el-color-primary-light-5: #1f6feb;
+  --el-color-primary-dark-2: #79c0ff;
+  --el-text-color-primary: #e6edf3;
+  --el-text-color-regular: #8b949e;
+  --el-text-color-secondary: #6e7681;
+  --el-border-color-light: #30363d;
+  --el-border-color: #21262d;
+  --el-bg-color: #0d1117;
+  --el-bg-color-overlay: #161b22;
+}
+
+.el-card {
+  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  border: 1px solid var(--el-border-color);
+  color: var(--el-text-color-primary);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.el-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  border-color: var(--el-color-primary-light-5);
+}
+
+.el-progress {
+  --el-progress-bar-color: var(--el-color-primary);
+  --el-progress-background-color: #30363d;
+}
+
+.el-button {
+  --el-button-font-weight: 500;
+}
+
+.el-icon {
+  transition: all 0.2s ease;
 }

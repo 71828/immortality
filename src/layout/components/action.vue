@@ -34,7 +34,7 @@ const isExecution = computed(() => {
                             s: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1)
                             }}/{{ item.Proficiency.capacity.toFixed(1) }}</span>
                         </div>
-                        <div class="perSecond" v-if="item.isExecution">
+                        <div class="perSecond" v-if="isExecution(item)">
 
                             +{{ item.Proficiency.perSecond }}</div>
                     </div>
@@ -52,7 +52,7 @@ const isExecution = computed(() => {
                                 <MoreFilled />
                             </el-icon>
                         </div>
-                        <el-icon class="icon" v-if="item.isExecution">
+                        <el-icon class="icon" v-if="isExecution(item)">
                             <VideoPause />
                         </el-icon>
                         <el-icon class="icon" v-else>
@@ -77,102 +77,126 @@ const isExecution = computed(() => {
 </template>
 <style lang="scss" scoped>
 .aciton-list {
-
     min-height: 500px;
     overflow: visible;
     display: flex;
-    display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
-    gap: 30px;
+    gap: 20px;
+    padding: 8px;
 
     .item {
-        background-color: #171b23;
-        width: 200px;
-        color: #ccc;
-        padding: 8px 12px;
-        border-radius: 16px;
-        box-shadow: 0px 0px 20px 10px #171b2304;
+        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+        width: 180px;
+        color: #e6edf3;
+        padding: 12px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         cursor: pointer;
-        border: 2px solid #585956;
-        transition: .3s;
+        border: 1px solid var(--el-border-color);
+        transition: all 0.3s ease;
         position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #58a6ff, #79c0ff, #58a6ff);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        &:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border-color: #58a6ff;
+
+            &::before {
+                transform: scaleX(1);
+            }
+        }
 
         .desc {
             position: absolute;
-            left: -2px;
-            right: -2px;
-            height: 0;
-            top: 120px;
-            border-radius: 16px;
-            background: #171b23;
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius: 0px;
-            transition: .3s;
+            left: -1px;
+            right: -1px;
+            top: 100%;
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border-radius: 0 0 16px 16px;
+            transition: all 0.3s ease;
             font-size: 14px;
-            padding: 12px;
-            line-height: 21px;
-            border-left: 2px solid #171b23;
-            border-right: 2px solid #171b23;
-            border-bottom: 2px solid #171b23;
+            padding: 16px;
+            line-height: 24px;
+            border: 1px solid var(--el-border-color);
+            border-top: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 
             .dvi {
-                border-bottom: 1px solid #23252f;
+                border-bottom: 1px solid var(--el-border-color-light);
+                margin: 8px 0;
             }
 
             .mark {
-                color: #fc263f;
+                color: #f85149;
+                font-weight: 500;
             }
 
             .mark1 {
                 color: #ffb730;
+                font-weight: 500;
             }
         }
 
         &.isExecution {
-            border: 2px solid #7d96f148;
+            border: 1px solid #58a6ff;
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
 
             .desc {
-                border-left: 2px solid #7d96f148;
-                border-right: 2px solid #7d96f148;
-                border-bottom: 2px solid #7d96f148;
+                border: 1px solid #58a6ff;
+                border-top: none;
             }
         }
 
-
         &.expand {
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
 
             .desc {
-                border-top-left-radius: 0px;
-                border-top-right-radius: 0px;
-                border-bottom-left-radius: 16px;
-                border-bottom-right-radius: 16px;
-                height: 100px;
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
             }
         }
 
         .head {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 16px;
+            margin-bottom: 8px;
+            font-size: 14px;
             align-items: center;
 
             .name {
-                font-size: 16px;
+                font-size: 14px;
                 font-weight: 600;
             }
         }
 
         .content {
-            margin-bottom: 4px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 12px;
+            color: #8b949e;
 
             .perSecond {
-                color: #5378f9;
+                color: #58a6ff;
+                font-weight: 500;
             }
         }
 
@@ -180,18 +204,18 @@ const isExecution = computed(() => {
             padding-top: 8px;
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 12px;
 
             .icon {
-                font-size: 26px;
-                padding: 2px;
+                font-size: 20px;
+                padding: 3px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
 
                 &:hover {
-                    color: #fff;
-                    font-weight: 700;
-                    background-color: #101118;
-
-                    border-radius: 12px;
+                    color: #58a6ff;
+                    background-color: rgba(88, 166, 255, 0.1);
+                    transform: scale(1.1);
                 }
             }
         }
@@ -204,9 +228,9 @@ const isExecution = computed(() => {
 
     .bar-wrap {
         flex: 1;
-        height: 6px;
-        border-radius: 20px;
-        background-color: #363636;
+        height: 8px;
+        border-radius: 4px;
+        background-color: var(--el-border-color-light);
         position: relative;
         overflow: hidden;
 
@@ -216,15 +240,10 @@ const isExecution = computed(() => {
             top: 0;
             left: 0;
             background: linear-gradient(90deg, #1d1da3 0%, #4242cf 60%, #5a81ff 100%);
-            border-radius: 6px;
+            border-radius: 4px;
         }
     }
-
-    // .desc {
-    //     width: 50px;
-    //     text-align: right;
-    //     margin-left: 8px;
-    //     font-size: 15px;
-    // }
 }
+
+
 </style>

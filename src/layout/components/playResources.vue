@@ -53,36 +53,64 @@ const list1 = ['QB', 'EP', 'MP']
 </template>
 <style lang="scss" scoped>
 .list {
-    width: 250px;
-    padding: 12px;
+    width: 100%;
+    padding: 16px;
+    min-width: 0;
 
     .item {
-        border-bottom: #1e2029;
-        font-size: 18px;
-        line-height: 27px;
-        margin-bottom: 12px;
+        font-size: 16px;
+        line-height: 24px;
+        margin-bottom: 16px;
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+
+        &:nth-child(1) { animation-delay: 0.1s; }
+        &:nth-child(2) { animation-delay: 0.2s; }
+        &:nth-child(3) { animation-delay: 0.3s; }
+        &:nth-child(4) { animation-delay: 0.4s; }
 
         .cell {
             display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #e6edf3;
+            width: 100%;
+            min-width: 0;
+
+            .label {
+                font-weight: 500;
+                color: #8b949e;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                flex-shrink: 1;
+                max-width: 120px;
+            }
+
+            .value {
+                font-weight: 500;
+                color: #e6edf3;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
         }
 
         .line {
-            background: #4a4e5e;
-            height: 5px;
+            background-color: var(--el-border-color-light);
+            height: 8px;
             position: relative;
             z-index: 1;
-            border-radius: 50px;
+            border-radius: 4px;
             margin-top: 8px;
-            // box-shadow: 0px 0px 20px 10px #101118;
-            border: 2px solid #101118;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
 
             .line-progress {
-                overflow: hidden;
                 width: 0%;
                 height: 100%;
                 position: absolute;
                 z-index: 2;
-                border-radius: 50px;
+                border-radius: 4px;
 
                 &.QB {
                     background: #fc263f;
@@ -98,14 +126,28 @@ const list1 = ['QB', 'EP', 'MP']
             }
         }
     }
-
 }
 
 .card {
-    background-color: #1e2029;
-    color: #ddd;
-    border-radius: 8px;
-    padding: 0 12px;
-    margin-bottom: 12px;
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    color: #e6edf3;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid var(--el-border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+
+
 </style>

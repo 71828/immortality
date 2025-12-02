@@ -33,27 +33,29 @@ import task from './task.vue'
 .main-content {
     display: flex;
     padding: 24px;
-    gap: 32px;
-    border: 1px solid #101118;
+    gap: 24px;
+    background-color: #0f1117;
+    min-height: 100vh;
 
-    .left {}
+    .left {
+        width: 360px;
+    }
 
     .center {
         flex: 1;
     }
 
     .right {
-        width: 300px;
+        width: 320px;
     }
-
 }
 
 .card {
-    border-radius: 4px;
+    border-radius: 12px;
     padding: 24px;
-    background-color: #101118;
-    border: 2px solid #333;
-    border-radius: 8px;
-
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    border: 1px solid var(--el-border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    margin-bottom: 24px;
 }
 </style>
