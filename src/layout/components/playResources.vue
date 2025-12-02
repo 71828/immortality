@@ -1,5 +1,7 @@
 <script setup>
 import { playAttribute } from '@/store/playAttribute.js'
+import { useMainStore } from '@/store/store'
+
 const playAttr = playAttribute()
 
 const list1 = ['QB', 'EP', 'MP']
@@ -11,12 +13,17 @@ const list1 = ['QB', 'EP', 'MP']
         <div class="card">
             <div class="list">
                 <div class="item">
-                    <div class="cell">
-                        <div class="label">xw：{{ playAttr.EXP.levelName }}</div>
+                    <div class="cell" style="display: flex;justify-content: space-between;">
+                        <div class="label">xw：{{
+                            playAttr.EXP.stages[playAttr.EXP.stage].levels[playAttr.EXP.stageLevel].name }}
+
+                        </div>
+                        <div class="value">{{ playAttr.EXP.val }}/{{ playAttr.EXP.max }}</div>
+
                     </div>
                 </div>
                 <div class="item">
-                    <div class="label">ss：{{ playAttr.EXP.levelName }}</div>
+                    <div class="label">ss：{{ playAttr.Life.baseVal + useMainStore().year }}/{{ playAttr.Life.max }}</div>
                 </div>
             </div>
         </div>
@@ -48,14 +55,17 @@ const list1 = ['QB', 'EP', 'MP']
 .list {
     width: 250px;
     padding: 12px;
+
     .item {
         border-bottom: #1e2029;
         font-size: 18px;
         line-height: 27px;
         margin-bottom: 12px;
+
         .cell {
             display: flex;
         }
+
         .line {
             background: #4a4e5e;
             height: 5px;
@@ -65,6 +75,7 @@ const list1 = ['QB', 'EP', 'MP']
             margin-top: 8px;
             // box-shadow: 0px 0px 20px 10px #101118;
             border: 2px solid #101118;
+
             .line-progress {
                 overflow: hidden;
                 width: 0%;
@@ -72,12 +83,15 @@ const list1 = ['QB', 'EP', 'MP']
                 position: absolute;
                 z-index: 2;
                 border-radius: 50px;
+
                 &.QB {
                     background: #fc263f;
                 }
+
                 &.EP {
                     background: #ffb730;
                 }
+
                 &.MP {
                     background: #2c5afb;
                 }

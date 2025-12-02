@@ -1,27 +1,27 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { executionList, actionData } from '@/store/playAction'
-const actionList = actionData().actionList
-function toAction(item) {
-    if (item.isExecution) {
-        executionList().list = []
-        item.isExecution = false
-    } else {
-        actionList.map(item=>{
-            item.isExecution=false
-        })
-        item.isExecution = true
-        executionList().list = []
-        executionList().list.push(item)
-    }
+const { actionList } = actionData()
+const { setExecution } = executionList()
+function actionChange(item) {
+    setExecution(item)
 }
 
+// function isExecution(action) {
+//     console.log(executionList().list.find(ele => ele.id === action.id));
+// }
+const isExecution = computed(() => {
+    return (action) => {
+        return executionList().list.some(ele => ele.id === action.id);
+    }
+});
 </script>
 <template>
     <div class="">
         <div class="aciton-list">
             <template v-for="(item, index) in actionList" :key="index">
-                <div class="item" :class="{ isExecution: item.isExecution, expand: item.expand }" @click="toAction(item)">
+                <div class="item" :class="{ isExecution: isExecution(item), expand: item.expand }" v-if="item.visibility"
+                    @click="actionChange(item)">
                     <div class="head">
                         <div class="name">{{ item.name }} </div>
                         <div>{{ item.Proficiency.level }}
@@ -31,11 +31,10 @@ function toAction(item) {
                     <div class="content">
                         <div>
                             s: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1)
-                                }}/{{ item.Proficiency.capacity.toFixed(1) }}</span>
+                            }}/{{ item.Proficiency.capacity.toFixed(1) }}</span>
                         </div>
                         <div class="perSecond" v-if="item.isExecution">
-                            
-                            <!-- <span>{{item.Proficiency.efficiency}}</span> -->
+
                             +{{ item.Proficiency.perSecond }}</div>
                     </div>
                     <div class="progress">
@@ -82,8 +81,9 @@ function toAction(item) {
     overflow: visible;
     display: flex;
     display: flex;
-	align-items: flex-start;
+    align-items: flex-start;
     gap: 30px;
+
     .item {
         background-color: #171b23;
         width: 200px;
@@ -113,12 +113,15 @@ function toAction(item) {
             border-left: 2px solid #171b23;
             border-right: 2px solid #171b23;
             border-bottom: 2px solid #171b23;
+
             .dvi {
                 border-bottom: 1px solid #23252f;
             }
+
             .mark {
                 color: #fc263f;
             }
+
             .mark1 {
                 color: #ffb730;
             }
@@ -126,6 +129,7 @@ function toAction(item) {
 
         &.isExecution {
             border: 2px solid #7d96f148;
+
             .desc {
                 border-left: 2px solid #7d96f148;
                 border-right: 2px solid #7d96f148;
