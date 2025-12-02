@@ -5,25 +5,17 @@ export const executionList = defineStore('executionList', () => {
   const list = ref([])
 
   function setExecution(action) {
-    const onExecution = this.list.find(ele => ele.id == action.id)
+    const onExecution = list.value.find(ele => ele.id == action.id)
 
-
-    this.list = []
-    if (onExecution) {
-
-    } else {
-
-      this.list.push(action)
+    list.value = []
+    if (!onExecution) {
+      list.value.push(action)
     }
   }
 
   return {
     list, setExecution
   }
-
-
-
-
 })
 
 export const actionData = defineStore('actionData', () => {
@@ -64,7 +56,7 @@ export const actionData = defineStore('actionData', () => {
       visibility: true,        //名称
       Proficiency: {      //动作经验对象 
         level: 0,       //动作等级
-        val: 0,         //当前动作经验值
+        val: 0,         //当前经验值
         perSecond: 3,    //每秒变动值
         capacity: 3,     //当前经验上限
         levelRate: 0.2,
@@ -99,7 +91,6 @@ export const actionData = defineStore('actionData', () => {
       id,
       name,
       visibility = false,
-      isExecution = false,
       Proficiency,
       frameChanges,
       levelChanges
@@ -107,7 +98,6 @@ export const actionData = defineStore('actionData', () => {
     this.name = name
     this.id = id
     this.visibility = visibility
-    this.isExecution = isExecution
     this.Proficiency = Proficiency
     this.frameChanges = frameChanges
     this.levelChanges = levelChanges
@@ -120,11 +110,8 @@ export const actionData = defineStore('actionData', () => {
     })
   }
 
-
-
   return {
     actionList, init
-
   }
 })
 

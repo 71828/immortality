@@ -4,6 +4,7 @@ import { executionList, actionData } from '@/store/playAction'
 const { actionList } = actionData()
 const { setExecution } = executionList()
 function actionChange(item) {
+    // 设置当前动作的执行状态并添加到执行队列
     setExecution(item)
 }
 
