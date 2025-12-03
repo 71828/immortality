@@ -8,30 +8,37 @@ const logs = log()
 <template>
     <div>
         <div class="card">
-
-            <div class="title">rz</div>
             <div class="list">
-                <div class="item" v-for="(item, index) in logs.displayList" :key="index">
-                    <div class="date"> {{ item.date }}</div>
-                    <div class="title" >{{ item.title}}</div>
+                <div 
+                    class="item" 
+                    :class="item.type" 
+                    v-for="(item, index) in logs.displayList" 
+                    :key="item.id"
+                >
+                    <div class="header">
+                        <div class="date">{{ item.date }}</div>
+                        <div class="type-badge" :class="item.type">{{ item.type }}</div>
+                    </div>
+                    <div class="title">{{ item.title }}</div>
+                    <div class="description" v-if="item.description">{{ item.description }}</div>
                 </div>
             </div>
         </div>
-
     </div>
-
-
-
 </template>
+
 <style lang="scss" scoped>
 .card {
     background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
     color: #e6edf3;
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 0;
+    margin: 12px 0 0 0;
     border: 1px solid var(--el-border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .title {
@@ -39,14 +46,14 @@ const logs = log()
     font-weight: 600;
     margin-bottom: 12px;
     color: #58a6ff;
-    border-bottom: 1px solid var(--el-border-color-light);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .list {
-    max-height: 250px;
+    flex-grow: 1;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(88, 166, 255, 0.5) transparent;
@@ -78,15 +85,22 @@ const logs = log()
     .item {
         display: flex;
         flex-direction: column;
-        padding: 10px 0;
+        padding: 12px 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         font-size: 13px;
         animation: fadeInUp 0.2s ease-out forwards;
         opacity: 0;
-        gap: 4px;
+        gap: 6px;
 
         &:last-child {
             border-bottom: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
         }
 
         .date {
@@ -97,16 +111,50 @@ const logs = log()
             letter-spacing: 0.5px;
         }
 
+        .type-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            
+            &.success {
+                background-color: rgba(52, 211, 153, 0.1);
+                color: #34d399;
+                border: 1px solid rgba(52, 211, 153, 0.3);
+            }
+            
+            &.info {
+                background-color: rgba(88, 166, 255, 0.1);
+                color: #58a6ff;
+                border: 1px solid rgba(88, 166, 255, 0.3);
+            }
+            
+            &.notice {
+                background-color: rgba(255, 183, 48, 0.1);
+                color: #ffb730;
+                border: 1px solid rgba(255, 183, 48, 0.3);
+            }
+        }
+
         .title {
             color: #e6edf3;
             font-size: 13px;
-            font-weight: 400;
+            font-weight: 500;
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
             text-transform: none;
             letter-spacing: 0;
             line-height: 1.4;
+        }
+        
+        .description {
+            color: #8b949e;
+            font-size: 12px;
+            line-height: 1.4;
+            margin-top: 2px;
         }
     }
 }

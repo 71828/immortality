@@ -22,26 +22,31 @@ const isExecution = computed(() => {
 </script>
 <template>
     <div class="">
-        <div class="aciton-list">
+        <TransitionGroup name="action-item" tag="div" class="aciton-list">
             <!-- 动作列表 -->
-            <template v-for="(item, index) in actionDataStore.actionList" :key="index">
-                <div class="item" :class="{ isExecution: isExecution(item) }"
-                    @click="actionChange(item)">
-                    <div class="head">
-                        <div class="name">{{ item.name }} </div>
-                        <div class="level">{{ item.proficiency.executeCount }}
-                            <span v-if="item.proficiency.executeLimit">/{{ item.proficiency.executeLimit }} </span>
-                        </div>
+            <div 
+                v-for="(item, index) in actionDataStore.actionList" 
+                :key="item.uniqueId"
+                class="item" 
+                :class="{ isExecution: isExecution(item) }"
+                @click="actionChange(item)"
+            >
+                <div class="head">
+                    <div class="name">{{ item.name }} </div>
+                    <div class="level">{{ item.proficiency.executeCount }}
+                        <span v-if="item.proficiency.executeLimit">/{{ item.proficiency.executeLimit }} </span>
                     </div>
-                    <div class="content">
-                        <div class="progress-text">
-                            s: <span> {{ item.proficiency.experience === 0 ? 0 : item.proficiency.experience.toFixed(1)
-                            }}/{{ item.proficiency.maxExperience.toFixed(1) }}</span>
-                        </div>
-                        <div class="perSecond" v-if="isExecution(item)">
-                            +{{ item.proficiency.experiencePerSecond }}
-                        </div>
+                </div>
+                <div class="content">
+                    <div class="progress-text">
+                        s: <span> {{ item.proficiency.experience === 0 ? 0 : item.proficiency.experience.toFixed(1)
+                        }}/{{ item.proficiency.maxExperience.toFixed(1) }}</span>
                     </div>
+                    <div class="perSecond" v-if="isExecution(item)">
+                        +{{ item.proficiency.experiencePerSecond }}
+                    </div>
+                </div>
+                <div class="bottom-section">
                     <div class="progress">
                         <div class="bar-wrap">
                             <div class="bar-item"
@@ -60,8 +65,8 @@ const isExecution = computed(() => {
                         </div>
                     </div>
                 </div>
-            </template>
-        </div>
+            </div>
+        </TransitionGroup>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -71,15 +76,15 @@ const isExecution = computed(() => {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 24px;
-    padding: 16px;
+    gap: 16px;
+    padding: 12px;
 }
 
 .item {
     background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-    width: 190px;
+    width: 200px;
     color: #e6edf3;
-    padding: 16px;
+    padding: 12px 12px 4px;
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
     cursor: pointer;
@@ -89,20 +94,8 @@ const isExecution = computed(() => {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    min-height: 160px;
-}
-
-.item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #1d1da3 0%, #4242cf 60%, #5a81ff 100%);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
+    gap: 4px;
+    min-height: 120px;
 }
 
 .item:hover {
@@ -112,18 +105,12 @@ const isExecution = computed(() => {
 
 .item.isExecution {
     border: 1px solid #58a6ff;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-    background: linear-gradient(135deg, #1a1f2e 0%, #121520 100%);
-    position: relative;
-    overflow: hidden;
-}
-
-.item.isExecution::before {
-    transform: scaleX(1);
+    box-shadow: 0 2px 12px rgba(88, 166, 255, 0.2);
+    background: #1a1d23;
 }
 
 .item.isExecution .bar-item {
-    background: linear-gradient(90deg, #1d1da3 0%, #4242cf 50%, #5a81ff 100%);
+    background: #58a6ff;
 }
 
 .item.isExecution .play-icon {
@@ -180,12 +167,9 @@ const isExecution = computed(() => {
     color: #58a6ff;
     font-weight: 600;
     font-size: 12px;
-    background-color: rgba(88, 166, 255, 0.15);
-    padding: 2px 6px;
-    border-radius: 8px;
+    padding: 2px 0;
     white-space: nowrap;
     flex-shrink: 0;
-    min-width: 48px;
     text-align: right;
 }
 
@@ -245,11 +229,68 @@ const isExecution = computed(() => {
     min-height: 32px;
 }
 
+.bottom-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    padding-top: 2px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+    min-height: 32px;
+}
+
+.progress {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    width: auto;
+    flex-shrink: 1;
+}
+
+.foot {
+    padding-top: 0;
+    border-top: none;
+    min-height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    width: auto;
+}
+
+.foot .play-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto;
+}
+
 .foot .play-icon:hover {
     color: #58a6ff;
     background-color: rgba(88, 166, 255, 0.1);
     transform: scale(1.05);
 }
 
+/* 动作项进入和离开动画 */
+.action-item-enter-active,
+.action-item-leave-active {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.action-item-enter-from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+}
+
+.action-item-leave-to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+}
+
+.action-item-move {
+    transition: transform 0.3s ease;
+}
 
 </style>

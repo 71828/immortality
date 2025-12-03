@@ -1,54 +1,62 @@
-﻿import { defineStore } from 'pinia';
+import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useActionData } from './playAction';
 import { Decimal } from 'decimal.js';
+// 导入任务store，用于更新任务进度
+import { task as taskStore } from './task';
+import { log as logStore } from './log';
 
 export const playAttribute = defineStore('playAttribute', () => {
-  // 经验值表 - 定义各阶段各等级的经验值上限
+  // 修为表 - 定义各阶段各等级的修为上限
   const expStages = ref([{
     levels: [{
-      name: 'fr',
+      name: 'Mortal Body',
       max: 9
     }]
   }, {
     levels: [{
-      name: 'lq1',
+      name: 'Qi Refining Layer 1',
       max: 19
     }, {
-      name: 'lq2',
+      name: 'Qi Refining Layer 2',
       max: 39
     }, {
-      name: 'lq3',
+      name: 'Qi Refining Layer 3',
       max: 59
     }, {
-      name: 'lq4',
+      name: 'Qi Refining Layer 4',
       max: 79
     }, {
-      name: 'lq5',
+      name: 'Qi Refining Layer 5',
       max: 99
     }, {
-      name: 'lq6',
+      name: 'Qi Refining Layer 6',
       max: 119
     }]
   }]);
 
-  // 经验值属性
+  // 修为属性
   const EXP = ref({
-    name: 'xw',
+    name: 'Cultivation',
     val: 0,
     max: 9,
     stage: 0,
     stageLevel: 0
   });
+  
+  // 日志标志位，避免重复添加日志
+  const logFlags = ref({
+    experienceFull: false // 修为达到上限日志是否已添加
+  });
 
   const Life = ref({
-    name: 'Life',
+    name: 'Longevity',
     baseVal: 10,
     max: 60
   });
 
   const QB = ref({
-    name: 'q',
+    name: 'Qi',
     val: 5,
     max: 5,
     perSecond: 0.1,
@@ -57,7 +65,7 @@ export const playAttribute = defineStore('playAttribute', () => {
   });
 
   const EP = ref({
-    name: 'j',
+    name: 'Energy',
     val: 10,
     max: 10,
     perSecond: 0.1,
@@ -78,7 +86,7 @@ export const playAttribute = defineStore('playAttribute', () => {
    * - haveMax: 是否有最大值限制
    */
   const MP = ref({
-    name: 'ff',
+    name: 'Mana',
     val: 100,
     max: 100,
     perSecond: 1,
@@ -98,7 +106,7 @@ export const playAttribute = defineStore('playAttribute', () => {
    * - haveMax: 是否有最大值限制
    */
   const SE = ref({
-    name: 'zy',
+    name: 'Spirit',
     val: 0,
     max: 0,
     visable: false,
@@ -117,7 +125,7 @@ export const playAttribute = defineStore('playAttribute', () => {
    * - haveMax: 是否有最大值限制
    */
   const CHA = ref({
-    name: 'ml',
+    name: 'Charisma',
     val: 0,
     max: 0,
     visable: false,
@@ -136,7 +144,7 @@ export const playAttribute = defineStore('playAttribute', () => {
    * - haveMax: 是否有最大值限制
    */
   const CP = ref({
-    name: 'wx',
+    name: 'Wisdom',
     val: 0,
     max: 0,
     visable: false,
@@ -155,7 +163,7 @@ export const playAttribute = defineStore('playAttribute', () => {
    * - haveMax: 是否有最大值限制
    */
   const SS = ref({
-    name: 'ss',
+    name: 'Longevity',
     val: 0,
     max: 0,
     visable: false,
@@ -163,18 +171,18 @@ export const playAttribute = defineStore('playAttribute', () => {
   });
 
   /**
-   * 运势属性 (Luck)
+   * 悟性属性 ()
    * 影响角色的随机事件和机遇
    * 
    * 属性说明：
    * - name: 属性名称标识
-   * - val: 当前运势值
-   * - max: 最大运势值
+   * - val: 当前悟性值
+   * - max: 最大悟性值  
    * - visable: 是否在UI中显示
    * - haveMax: 是否有最大值限制
    */
   const SP = ref({
-    name: 'ys',
+    name: 'Luck',
     val: 0,
     max: 0,
     visable: false,
@@ -199,7 +207,7 @@ export const playAttribute = defineStore('playAttribute', () => {
       val = val / 100;
     }
 
-    // 特殊处理经验值变化
+    // 特殊处理修为变化
     if (attrTarget === 'EXP' && keyTarget === 'val') {
       const currentVal = new Decimal(EXP.value.val);
       const changeVal = new Decimal(val);
@@ -247,41 +255,69 @@ export const playAttribute = defineStore('playAttribute', () => {
     return;
   }
   /**
-   * 处理经验值变化
-   * 管理经验值的升级和突破逻辑
+   * 处理修为变化
+   * 管理修为的升级和突破逻辑
    * 
-   * @param {number} newValue - 新的经验值
+   * @param {number} newValue - 新的修为
    */
   function handleExpChange(newValue) {
     const actionDataStore = useActionData();
-    // 判断是否经验到达上限
+    const logs = logStore();
+    
+    // 判断是否修为到达上限
     if (newValue >= EXP.value.max) {
-      // 经验值已达上限，触发突破逻辑
+      // 修为已达上限，触发突破逻辑
       EXP.value.val = EXP.value.max;
+      
+      // 只有当标志位为false时才添加日志，避免重复添加
+      if (!logFlags.value.experienceFull) {
+        // 添加修为达到上限日志
+        logs.addLog({
+        type: 'EXPERIENCE_FULL',
+        title: 'Cultivation Reached Limit',
+        description: `Cultivation has reached the limit of ${EXP.value.max} for this stage, ready to breakthrough`
+      });
+        
+        // 设置标志位为true，防止重复添加
+        logFlags.value.experienceFull = true;
+      }
+      
       if (EXP.value.stage === 0) {
         actionDataStore.addAction(2);
-        // 基础阶段，经验值达到上限后，设置为上限值
+        // 基础阶段，修为达到上限后，设置为上限值
         
       }
       if (EXP.value.stage === 1) {
-        // 突破阶段，调用突破方法，该方法会自动处理经验值和等级
-        breakthrough();
+        // 突破阶段，调用突破方法，该方法会自动处理修为和等级
+        const result = breakthrough();
+        if (result === true) {
+          logs.addLog({
+        type: 'ACTION_COMPLETE',
+        title: 'Breakthrough Successful',
+        description: `Successfully broke through to a new stage. Current stage: ${EXP.value.stage}, Level: ${EXP.value.stageLevel}`
+      });
+          // 突破成功后重置标志位，以便下次达到上限时能再次添加日志
+          logFlags.value.experienceFull = false;
+        }
       }
     } else {
-      // 经验值未达上限，正常赋值
+      // 修为未达上限，正常赋值
       EXP.value.val = newValue;
+      
+      // 重置标志位，以便下次达到上限时能再次添加日志
+      logFlags.value.experienceFull = false;
     }
   }
   /**
    * 修为突破方法
-   * 突破到下一等级，清空当前经验值，并更新经验值上限
+   * 突破到下一等级，清空当前修为，并更新修为上限
    * 
    * 突破逻辑：
    * 1. 检查当前等级是否是当前阶段的最后一个等级
    * 2. 如果是最后一个等级，突破到下一阶段，等级重置为0
    * 3. 如果不是最后一个等级，突破到当前阶段的下一等级
-   * 4. 清空当前经验值
-   * 5. 从经验值表中获取对应的经验值上限
+   * 4. 清空当前修为
+   * 5. 从修为表中获取对应的修为上限
    * 
    * @returns {boolean|Error} - 突破成功返回true，失败返回Error对象
    */
@@ -291,9 +327,9 @@ export const playAttribute = defineStore('playAttribute', () => {
     const currentStageLevel = EXP.value.stageLevel;
     const stage = expStages.value[currentStage];
 
-    // 检查当前经验值是否达到突破要求
+    // 检查当前修为是否达到突破要求
     if (EXP.value.val < EXP.value.max) {
-      return new Error('经验值不足，无法突破');
+      return new Error('修为不足，无法突破');
     }
 
     // 执行突破逻辑
@@ -321,13 +357,29 @@ export const playAttribute = defineStore('playAttribute', () => {
     EXP.value.stage = newStage;
     EXP.value.stageLevel = newStageLevel;
 
-    // 清空当前经验值
+    // 清空当前修为
     EXP.value.val = 0;
 
-    // 从经验值表中获取对应的经验值上限
+    // 更新修为上限
     const targetStage = expStages.value[newStage];
     const targetLevel = targetStage.levels[newStageLevel];
     EXP.value.max = targetLevel.max;
+    
+    // 更新突破任务进度
+    const tasks = taskStore();
+    tasks.updateBreakthroughTaskProgress();
+    
+    // 突破到第二阶段（stage 1）时解锁显示法力属性
+    if (newStage === 1) {
+      MP.value.visable = true;
+      // 添加解锁法力属性的日志
+      const logs = logStore();
+      logs.addLog({
+        type: 'ACTION_COMPLETE',
+        title: 'Magic Power Attribute Unlocked',
+        description: 'Broke through to the second stage, successfully unlocked Magic Power attribute!'
+      });
+    }
 
     return true;
   }
@@ -362,8 +414,8 @@ export const playAttribute = defineStore('playAttribute', () => {
   }
 
   return {
-    EXP,         // 经验值属性
-    expStages,   // 经验值表配置
+    EXP,         // 修为属性
+    expStages,   // 修为表配置
     Life,        // 生命值属性
     QB,          // 气血值属性
     EP,          // 精力值属性
@@ -375,7 +427,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     SP,          // 运势属性
     setAttr,     // 设置属性值的方法
     regeneration,// 属性自动回复方法
-    handleExpChange, // 处理经验值变化的方法
+    handleExpChange, // 处理修为变化的方法
     breakthrough // 修为突破方法
   };
 });

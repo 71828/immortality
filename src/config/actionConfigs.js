@@ -1,7 +1,7 @@
 /**
  * 动作配置文件
  * 定义游戏中所有可执行动作的配置信息
- * 包含动作的基本属性、经验值设置、属性变化和等级提升效果
+ * 包含动作的基本属性、修为设置、属性变化和等级提升效果
  */
 
 /**
@@ -12,8 +12,8 @@
  * @property {Object} proficiency - 动作经验配置
  * @property {number} proficiency.executeLimit - 执行次数限制，0表示无限制
  * @property {number} proficiency.executeCount - 当前执行次数
- * @property {number} proficiency.experience - 当前动作经验值
- * @property {number} proficiency.experiencePerSecond - 每秒获取的动作经验值
+ * @property {number} proficiency.experience - 当前动作修为
+ * @property {number} proficiency.experiencePerSecond - 每秒获取的动作修为
  * @property {number} proficiency.maxExperience - 当前等级的经验上限
  * @property {number} proficiency.levelUpRate - 等级提升系数，决定经验上限的增长速度
  * @property {number} [proficiency.efficiency=100] - 动作执行效率，范围0-100
@@ -36,23 +36,23 @@
  */
 export const actionConfigurations = [
   /**
-   * 切割动作配置
-   * 基础动作，消耗精力值，获取经验值
+   * Chopping Action Configuration
+   * Basic action that consumes energy and gains cultivation
    */
   {
     uniqueId: 1,
-    name: 'cutting',
+    name: 'chopping',
     proficiency: {
       executeLimit: 0,          // 无执行次数限制
       executeCount: 0,          // 初始执行次数为0
-      experience: 0,          // 初始动作经验值为0
+      experience: 0,          // 初始动作修为为0
       experiencePerSecond: 3,  // 每秒获得3点动作经验
       maxExperience: 3,        // 当前等级经验上限为3
       levelUpRate: 0.2,        // 每次升级经验上限增加20%
     },
     frameAttributeChanges: [
       /**
-       * 每帧消耗精力值
+       * Energy Consumption per Frame
        */
       {
         attributeTarget: 'EP',
@@ -60,17 +60,17 @@ export const actionConfigurations = [
         perSecond: -1.1,         // 每秒消耗1.1点精力值
       },
       /**
-       * 每帧获得经验值
+       * 每帧获得修为
        */
       {
         attributeTarget: 'EXP',
         keyTarget: 'val',
-        perSecond: 10,           // 每秒获得10点经验值
+        perSecond: 5,           // 每秒获得5点修为，减慢修为增长速度
       }
     ],
     levelAttributeChanges: [
       /**
-       * 等级提升时增加气血上限
+       * Qi Limit Increase on Level Up
        */
       {
         attributeTarget: 'QB',
@@ -80,16 +80,16 @@ export const actionConfigurations = [
     ]
   },
   /**
-   * 突破动作配置
-   * 高级动作，用于突破到下一阶段
+   * Breakthrough Action Configuration
+   * Advanced action used to break through to the next stage
    */
   {
     uniqueId: 2,
-    name: 'tp',
+    name: 'breakthrough',
     proficiency: {
       executeLimit: 1,          // 只能执行1次
       executeCount: 0,          // 初始执行次数为0
-      experience: 0,          // 初始动作经验值为0
+      experience: 0,          // 初始动作修为为0
       experiencePerSecond: 3,  // 每秒获得3点动作经验
       maxExperience: 3,        // 当前等级经验上限为3
       levelUpRate: 0.2,        // 每次升级经验上限增加20%
@@ -97,9 +97,9 @@ export const actionConfigurations = [
       logForId: 1,             // 日志ID为1
       levelCallback: null      // 等级回调函数，由playAction.js动态设置
     },
-    // tp动作没有每帧属性变化
+    // 突破动作没有每帧属性变化
     frameAttributeChanges: [],
-    // tp动作没有等级提升属性变化
+    // 突破动作没有等级提升属性变化
     levelAttributeChanges: []
   }
 ]

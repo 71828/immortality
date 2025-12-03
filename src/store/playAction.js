@@ -4,6 +4,8 @@ import { ref } from 'vue'
 import { actionConfigurations as actionConfigs } from '../config/actionConfigs'
 // 导入playAttribute，避免循环依赖
 import { playAttribute as playAttributeStore } from './playAttribute'
+// 导入任务store，用于更新任务进度
+import { task as taskStore } from './task'
 
 // 执行列表Store - 管理当前正在执行的动作
 export const useExecutionList = defineStore('executionList', () => {
@@ -24,6 +26,9 @@ export const useExecutionList = defineStore('executionList', () => {
     if (!isExecuting) {
       // 替换当前执行的动作（每次只允许执行一个动作）
       executingActions.value = [action]
+      // 更新动作执行计数任务进度
+      const tasks = taskStore()
+      tasks.updateActionTaskProgress(action.uniqueId)
     } else {
       // 如果动作已在执行中，则停止执行
       executingActions.value = []
@@ -93,8 +98,19 @@ export const useActionData = defineStore('actionData', () => {
       // 复制动作配置，避免直接修改原配置
       const copiedConfig = JSON.parse(JSON.stringify(actionConfig))
       
-      // 为tp动作动态添加levelCallback
-      if (copiedConfig.name === 'tp') {
+      // 为砍树动作动态添加levelCallback，用于更新任务进度
+      if (copiedConfig.name === 'chopping') {
+        copiedConfig.proficiency.levelCallback = (item) => {
+          // 调用任务store的updateActionLevelTaskProgress方法更新任务进度
+          const tasks = taskStore();
+          // 这里需要计算当前等级，假设executeCount就是等级
+          const currentLevel = item.proficiency.executeCount;
+          tasks.updateActionLevelTaskProgress(item.uniqueId, currentLevel);
+        }
+      }
+      
+      // 为突破动作动态添加levelCallback
+      if (copiedConfig.name === 'breakthrough') {
         copiedConfig.proficiency.levelCallback = (item) => {
           const playAttr = playAttributeStore();
           // 调用突破方法，突破到下一阶段
@@ -123,28 +139,39 @@ export const useActionData = defineStore('actionData', () => {
     const actionConfig = actionConfigurations.value.find(item => item.uniqueId === actionId)
     
     if (actionConfig) {
-      const isAlreadyAdded = actionList.value.some(item => item.uniqueId === actionId)
-      
-      if (!isAlreadyAdded) {
-        // 复制动作配置，避免直接修改原配置
-        const newActionConfig = JSON.parse(JSON.stringify(actionConfig))
+        const isAlreadyAdded = actionList.value.some(item => item.uniqueId === actionId)
         
-        // 为tp动作动态添加levelCallback
-        if (newActionConfig.name === 'tp') {
-          newActionConfig.proficiency.levelCallback = (item) => {
-            const playAttr = playAttributeStore();
-            // 调用突破方法，突破到下一阶段
-            playAttr.breakthrough();
-          }
+        if (!isAlreadyAdded) {
+            // 复制动作配置，避免直接修改原配置
+            const newActionConfig = JSON.parse(JSON.stringify(actionConfig))
+            
+            // 为砍树动作动态添加levelCallback，用于更新任务进度
+        if (newActionConfig.name === 'chopping') {
+            newActionConfig.proficiency.levelCallback = (item) => {
+                // 调用任务store的updateActionLevelTaskProgress方法更新任务进度
+                const tasks = taskStore();
+                // 这里需要计算当前等级，假设executeCount就是等级
+                const currentLevel = item.proficiency.executeCount;
+                tasks.updateActionLevelTaskProgress(item.uniqueId, currentLevel);
+            }
         }
-        
-        const newId = actionList.value.length
-        const action = new Action({
-          ...newActionConfig,
-          id: newId
-        })
-        actionList.value.push(action)
-      }
+            
+            // 为突破动作动态添加levelCallback
+            if (newActionConfig.name === 'breakthrough') {
+                newActionConfig.proficiency.levelCallback = (item) => {
+                    const playAttr = playAttributeStore();
+                    // 调用突破方法，突破到下一阶段
+                    playAttr.breakthrough();
+                }
+            }
+            
+            const newId = actionList.value.length
+            const action = new Action({
+                ...newActionConfig,
+                id: newId
+            })
+            actionList.value.push(action)
+        }
     }
   }
 

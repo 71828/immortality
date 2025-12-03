@@ -3,8 +3,7 @@ import mainApp from './view/main.vue'
 </script>
 
 <template>
-
-  <mainApp  />
+  <mainApp />
 </template>
 
 <style scoped>

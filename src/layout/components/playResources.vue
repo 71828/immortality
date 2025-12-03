@@ -14,7 +14,7 @@ const list1 = ['QB', 'EP', 'MP']
             <div class="list">
                 <div class="item">
                     <div class="cell" style="display: flex;justify-content: space-between;">
-                        <div class="label">xw：{{
+                        <div class="label">{{
                             playAttr.expStages[playAttr.EXP.stage].levels[playAttr.EXP.stageLevel].name }}
 
                         </div>
@@ -23,7 +23,7 @@ const list1 = ['QB', 'EP', 'MP']
                     </div>
                 </div>
                 <div class="item">
-                    <div class="label">ss：{{ playAttr.Life.baseVal + useMainStore().year }}/{{ playAttr.Life.max }}</div>
+                    <div class="label">{{ playAttr.Life.name }}: {{ playAttr.Life.baseVal + useMainStore().year }}/{{ playAttr.Life.max }}</div>
                 </div>
             </div>
         </div>
