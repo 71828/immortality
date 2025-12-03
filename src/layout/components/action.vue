@@ -112,7 +112,7 @@ const isExecution = computed(() => {
 
 .item.isExecution {
     border: 1px solid #58a6ff;
-    box-shadow: 0 0 20px rgba(88, 166, 255, 0.25), 0 0 10px rgba(88, 166, 255, 0.15) inset;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
     background: linear-gradient(135deg, #1a1f2e 0%, #121520 100%);
     position: relative;
     overflow: hidden;

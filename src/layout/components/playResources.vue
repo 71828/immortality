@@ -97,20 +97,20 @@ const list1 = ['QB', 'EP', 'MP']
 
         .line {
             background-color: var(--el-border-color-light);
-            height: 8px;
+            height: 4px;
             position: relative;
             z-index: 1;
-            border-radius: 4px;
+            border-radius: 2px;
             margin-top: 8px;
             overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
 
             .line-progress {
                 width: 0%;
                 height: 100%;
                 position: absolute;
                 z-index: 2;
-                border-radius: 4px;
+                border-radius: 2px;
 
                 &.QB {
                     background: #fc263f;

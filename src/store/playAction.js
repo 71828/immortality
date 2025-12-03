@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { playAttribute } from './playAttribute'
+// 导入动作配置
+import { actionConfigurations as actionConfigs } from '../config/actionConfigs'
+// 导入playAttribute，避免循环依赖
+import { playAttribute as playAttributeStore } from './playAttribute'
 
 // 执行列表Store - 管理当前正在执行的动作
 export const useExecutionList = defineStore('executionList', () => {
@@ -43,63 +46,8 @@ export const useExecutionList = defineStore('executionList', () => {
 
 // 动作数据Store - 管理游戏中的所有动作
 export const useActionData = defineStore('actionData', () => {
-  // 动作配置列表
-  const actionConfigurations = ref([
-    {
-      uniqueId: 1,              // 唯一动作ID
-      name: 'cutting',          // 动作名称
-      proficiency: {            // 动作经验对象 
-        executeLimit: 0,          // 执行次数限制，0表示无限制
-        executeCount: 0,          // 当前执行次数
-        experience: 0,          // 当前动作经验值
-        experiencePerSecond: 3,  // 每秒经验获取值
-        maxExperience: 3,        // 当前经验上限
-        levelUpRate: 0.2,        // 等级提升系数
-        efficiency: 100,         // 执行效率 0-100
-        logForId: 1,             // 日志ID
-        levelCallback: (item) => {
-          // 等级提升回调
-        }
-      },
-      frameAttributeChanges: [{
-        attributeTarget: 'EP',   // 属性目标
-        keyTarget: 'val',        // 属性键
-        perSecond: -1.1,         // 每秒变动值
-      }, {
-        attributeTarget: 'EXP',
-        keyTarget: 'val',
-        perSecond: 10,           // 每秒变动值
-      }],
-      levelAttributeChanges: [{
-        attributeTarget: 'QB',
-        keyTarget: 'max',
-        perLevel: 1,             // 每级变动值
-      },{
-        attributeTarget: 'EXP',
-        keyTarget: 'val',
-        perLevel: 1,             // 每级变动值
-      },]
-    },
-    {
-      uniqueId: 2,              // 唯一动作ID
-      name: 'tp',     // 动作名称
-      proficiency: {            // 动作经验对象 
-        executeLimit: 1,          // 执行次数限制，1表示只能执行一次
-        executeCount: 0,          // 当前执行次数
-        experience: 0,          // 当前经验值
-        experiencePerSecond: 3,  // 每秒经验获取值
-        maxExperience: 3,        // 当前经验上限
-        levelUpRate: 0.2,        // 等级提升系数
-        efficiency: 100,         // 执行效率 0-100
-        logForId: 1,             // 日志ID
-        levelCallback: (item) => {
-          const playAttr = playAttribute();
-          // 调用突破方法，突破到下一阶段
-          playAttr.breakthrough();
-        }
-      },
-    },
-  ])
+  // 动作配置列表 - 使用从外部文件导入的配置
+  const actionConfigurations = ref([...actionConfigs])
   
   const actionList = ref([])
 
@@ -138,16 +86,28 @@ export const useActionData = defineStore('actionData', () => {
     // 清空现有列表
     actionList.value = []
     
-    // 初始化动作列表，只添加非突破动作
-    actionConfigurations.value
-      .filter(item => item.name !== 'tp')
-      .forEach((item, index) => {
-        const action = new Action({
-          ...item,
-          id: index
-        })
-        actionList.value.push(action)
+    // 只添加id为1的动作
+    const actionConfig = actionConfigurations.value.find(item => item.uniqueId === 1)
+    
+    if (actionConfig) {
+      // 复制动作配置，避免直接修改原配置
+      const copiedConfig = JSON.parse(JSON.stringify(actionConfig))
+      
+      // 为tp动作动态添加levelCallback
+      if (copiedConfig.name === 'tp') {
+        copiedConfig.proficiency.levelCallback = (item) => {
+          const playAttr = playAttributeStore();
+          // 调用突破方法，突破到下一阶段
+          playAttr.breakthrough();
+        }
+      }
+      
+      const action = new Action({
+        ...copiedConfig,
+        id: 0
       })
+      actionList.value.push(action)
+    }
   }
 
   /**
@@ -166,9 +126,21 @@ export const useActionData = defineStore('actionData', () => {
       const isAlreadyAdded = actionList.value.some(item => item.uniqueId === actionId)
       
       if (!isAlreadyAdded) {
+        // 复制动作配置，避免直接修改原配置
+        const newActionConfig = JSON.parse(JSON.stringify(actionConfig))
+        
+        // 为tp动作动态添加levelCallback
+        if (newActionConfig.name === 'tp') {
+          newActionConfig.proficiency.levelCallback = (item) => {
+            const playAttr = playAttributeStore();
+            // 调用突破方法，突破到下一阶段
+            playAttr.breakthrough();
+          }
+        }
+        
         const newId = actionList.value.length
         const action = new Action({
-          ...actionConfig,
+          ...newActionConfig,
           id: newId
         })
         actionList.value.push(action)
