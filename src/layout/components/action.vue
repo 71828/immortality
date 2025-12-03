@@ -1,11 +1,14 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { executionList, actionData } from '@/store/playAction'
-const { actionList } = actionData()
-const { setExecution } = executionList()
+import { useExecutionList, useActionData } from '@/store/playAction'
+
+// 初始化store实例
+const actionDataStore = useActionData();
+const executionListStore = useExecutionList();
+
 function actionChange(item) {
     // 设置当前动作的执行状态并添加到执行队列
-    setExecution(item)
+    executionListStore.setExecutingAction(item);
 }
 
 // function isExecution(action) {
@@ -13,61 +16,47 @@ function actionChange(item) {
 // }
 const isExecution = computed(() => {
     return (action) => {
-        return executionList().list.some(ele => ele.id === action.id);
+        return executionListStore.executingActions.some(ele => ele.uniqueId === action.uniqueId);
     }
 });
 </script>
 <template>
     <div class="">
         <div class="aciton-list">
-            <template v-for="(item, index) in actionList" :key="index">
-                <div class="item" :class="{ isExecution: isExecution(item), expand: item.expand }" v-if="item.visibility"
+            <!-- 动作列表 -->
+            <template v-for="(item, index) in actionDataStore.actionList" :key="index">
+                <div class="item" :class="{ isExecution: isExecution(item) }"
                     @click="actionChange(item)">
                     <div class="head">
                         <div class="name">{{ item.name }} </div>
-                        <div>{{ item.Proficiency.level }}
-                            <span v-if="item.Proficiency.maxLevel">/{{ item.Proficiency.maxLevel }} </span>
+                        <div class="level">{{ item.proficiency.executeCount }}
+                            <span v-if="item.proficiency.executeLimit">/{{ item.proficiency.executeLimit }} </span>
                         </div>
                     </div>
                     <div class="content">
-                        <div>
-                            s: <span> {{ item.Proficiency.val === 0 ? 0 : item.Proficiency.val.toFixed(1)
-                            }}/{{ item.Proficiency.capacity.toFixed(1) }}</span>
+                        <div class="progress-text">
+                            s: <span> {{ item.proficiency.experience === 0 ? 0 : item.proficiency.experience.toFixed(1)
+                            }}/{{ item.proficiency.maxExperience.toFixed(1) }}</span>
                         </div>
                         <div class="perSecond" v-if="isExecution(item)">
-
-                            +{{ item.Proficiency.perSecond }}</div>
+                            +{{ item.proficiency.experiencePerSecond }}
+                        </div>
                     </div>
                     <div class="progress">
                         <div class="bar-wrap">
                             <div class="bar-item"
-                                :style="{ width: Number(((item.Proficiency.val / item.Proficiency.capacity) * 100).toFixed(1)) + '%' }">
+                                :style="{ width: Number(((item.proficiency.experience / item.proficiency.maxExperience) * 100).toFixed(1)) + '%' }">
                             </div>
                         </div>
-
                     </div>
                     <div class="foot">
-                        <div>
-                            <el-icon class="icon" @click.stop="item.expand = !item.expand">
-                                <MoreFilled />
+                        <div class="play-icon-container">
+                            <el-icon class="play-icon" v-if="isExecution(item)">
+                                <VideoPause />
                             </el-icon>
-                        </div>
-                        <el-icon class="icon" v-if="isExecution(item)">
-                            <VideoPause />
-                        </el-icon>
-                        <el-icon class="icon" v-else>
-                            <VideoPlay />
-                        </el-icon>
-                    </div>
-                    <div class="desc" v-show="item.expand">
-                        <div class="cell">
-                            <div class="label">消耗 <span class="mark1">精力 </span> 每秒 -1 </div>
-                            <div class="value"></div>
-                        </div>
-                        <div class="dvi"></div>
-                        <div class="cell">
-                            <div class="label">完成此动作提升 <span class="mark">气血 </span> +1 </div>
-                            <div class="value"></div>
+                            <el-icon class="play-icon" v-else>
+                                <VideoPlay />
+                            </el-icon>
                         </div>
                     </div>
                 </div>
@@ -82,167 +71,184 @@ const isExecution = computed(() => {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 20px;
-    padding: 8px;
+    gap: 24px;
+    padding: 16px;
+}
 
-    .item {
-        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-        width: 180px;
-        color: #e6edf3;
-        padding: 12px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-        border: 1px solid var(--el-border-color);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
+.item {
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    width: 190px;
+    color: #e6edf3;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    border: 1px solid var(--el-border-color);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 160px;
+}
 
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #58a6ff, #79c0ff, #58a6ff);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
+.item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1d1da3 0%, #4242cf 60%, #5a81ff 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
 
-        &:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            border-color: #58a6ff;
+.item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    border-color: #58a6ff;
+}
 
-            &::before {
-                transform: scaleX(1);
-            }
-        }
+.item.isExecution {
+    border: 1px solid #58a6ff;
+    box-shadow: 0 0 20px rgba(88, 166, 255, 0.25), 0 0 10px rgba(88, 166, 255, 0.15) inset;
+    background: linear-gradient(135deg, #1a1f2e 0%, #121520 100%);
+    position: relative;
+    overflow: hidden;
+}
 
-        .desc {
-            position: absolute;
-            left: -1px;
-            right: -1px;
-            top: 100%;
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-            border-radius: 0 0 16px 16px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            padding: 16px;
-            line-height: 24px;
-            border: 1px solid var(--el-border-color);
-            border-top: none;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+.item.isExecution::before {
+    transform: scaleX(1);
+}
 
-            .dvi {
-                border-bottom: 1px solid var(--el-border-color-light);
-                margin: 8px 0;
-            }
+.item.isExecution .bar-item {
+    background: linear-gradient(90deg, #1d1da3 0%, #4242cf 50%, #5a81ff 100%);
+}
 
-            .mark {
-                color: #f85149;
-                font-weight: 500;
-            }
+.item.isExecution .play-icon {
+    color: #58a6ff;
+}
 
-            .mark1 {
-                color: #ffb730;
-                font-weight: 500;
-            }
-        }
+.head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
 
-        &.isExecution {
-            border: 1px solid #58a6ff;
-            box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);
+.head .name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e6edf3;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-            .desc {
-                border: 1px solid #58a6ff;
-                border-top: none;
-            }
-        }
+.head .level {
+    font-size: 14px;
+    font-weight: 500;
+    color: #58a6ff;
+    background-color: rgba(88, 166, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
 
-        &.expand {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
+.content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #8b949e;
+    gap: 8px;
+    flex-shrink: 0;
+    min-height: 24px;
+}
 
-            .desc {
-                opacity: 1;
-                visibility: visible;
-                transform: translateY(0);
-            }
-        }
+.content .progress-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-        .head {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-            align-items: center;
-
-            .name {
-                font-size: 14px;
-                font-weight: 600;
-            }
-        }
-
-        .content {
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #8b949e;
-
-            .perSecond {
-                color: #58a6ff;
-                font-weight: 500;
-            }
-        }
-
-        .foot {
-            padding-top: 8px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-
-            .icon {
-                font-size: 20px;
-                padding: 3px;
-                border-radius: 6px;
-                transition: all 0.2s ease;
-
-                &:hover {
-                    color: #58a6ff;
-                    background-color: rgba(88, 166, 255, 0.1);
-                    transform: scale(1.1);
-                }
-            }
-        }
-    }
+.content .perSecond {
+    color: #58a6ff;
+    font-weight: 600;
+    font-size: 12px;
+    background-color: rgba(88, 166, 255, 0.15);
+    padding: 2px 6px;
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 48px;
+    text-align: right;
 }
 
 .progress {
     display: flex;
     align-items: center;
+    width: 100%;
+    flex-shrink: 0;
+}
 
-    .bar-wrap {
-        flex: 1;
-        height: 8px;
-        border-radius: 4px;
-        background-color: var(--el-border-color-light);
-        position: relative;
-        overflow: hidden;
+.bar-wrap {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
 
-        .bar-item {
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: linear-gradient(90deg, #1d1da3 0%, #4242cf 60%, #5a81ff 100%);
-            border-radius: 4px;
-        }
-    }
+.bar-item {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: linear-gradient(90deg, #1d1da3 0%, #4242cf 60%, #5a81ff 100%);
+    border-radius: 3px;
+}
+
+.foot {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+    min-height: 36px;
+}
+
+.foot .play-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.foot .play-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    padding: 6px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    color: #8b949e;
+    flex-shrink: 0;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.foot .play-icon:hover {
+    color: #58a6ff;
+    background-color: rgba(88, 166, 255, 0.1);
+    transform: scale(1.05);
 }
 
 

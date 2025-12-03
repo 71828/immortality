@@ -3,6 +3,7 @@ import playResources from './playResources.vue'
 import action from './action.vue'
 import log from './log.vue'
 import task from './task.vue'
+import executingActions from './executingActions.vue'
 </script>
 <template>
     <div class="main-content">
@@ -13,6 +14,9 @@ import task from './task.vue'
         </div>
         <div class="center" >
             <div class="card">
+                <!-- 展示当前执行中的动作 -->
+                <executingActions />
+                
                 <action />
             </div>
         </div>

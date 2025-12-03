@@ -15,10 +15,10 @@ const list1 = ['QB', 'EP', 'MP']
                 <div class="item">
                     <div class="cell" style="display: flex;justify-content: space-between;">
                         <div class="label">xw：{{
-                            playAttr.EXP.stages[playAttr.EXP.stage].levels[playAttr.EXP.stageLevel].name }}
+                            playAttr.expStages[playAttr.EXP.stage].levels[playAttr.EXP.stageLevel].name }}
 
                         </div>
-                        <div class="value">{{ playAttr.EXP.val }}/{{ playAttr.EXP.max }}</div>
+                        <div class="value">{{ Math.floor(playAttr.EXP.val) }}/{{ playAttr.EXP.max }}</div>
 
                     </div>
                 </div>
