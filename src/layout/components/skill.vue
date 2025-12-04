@@ -9,15 +9,11 @@ const store = skillStore()
 // 获取属性store
 const attributeStore = playAttribute()
 
-// 自动修炼开关状态
-const autoCultivate = ref(false)
-// 自动修炼定时器
-let autoCultivateTimer = null
-// 自动修炼间隔（毫秒）
-const AUTO_CULTIVATE_INTERVAL = 500
-
 // 功法折叠状态，键为功法ID，值为是否折叠
 const collapsedSkills = ref({})
+
+// 存储每个功法的自动修炼状态
+const autoCultivateStates = ref({})
 
 // Return English layer number
 const arabicToChinese = (num) => {
@@ -46,26 +42,60 @@ store.fullLearnedSkills.forEach(skill => {
   }
 })
 
+// 自动修炼定时器
+let autoCultivateTimer = null
+// 自动修炼间隔（毫秒）
+const AUTO_CULTIVATE_INTERVAL = 500
+
+// 处理功法自动修炼开关变化
+const handleAutoCultivateChange = (skillId, value) => {
+  if (value) {
+    // 关闭其他所有功法的自动修炼
+    Object.keys(autoCultivateStates.value).forEach(id => {
+      autoCultivateStates.value[id] = false
+    })
+    // 开启当前功法的自动修炼
+    autoCultivateStates.value[skillId] = true
+    startAutoCultivate(skillId)
+  } else {
+    // 关闭当前功法的自动修炼
+    autoCultivateStates.value[skillId] = false
+    stopAutoCultivate()
+  }
+}
+
 // 自动修炼逻辑
-const startAutoCultivate = () => {
-  if (autoCultivateTimer) return
-  
+const startAutoCultivate = (skillId) => {
+  if (autoCultivateTimer) {
+    clearInterval(autoCultivateTimer)
+  }
+
   autoCultivateTimer = setInterval(() => {
-    // 获取当前选中的功法
-    const currentSkill = store.fullLearnedSkills.find(skill => skill.id === store.currentCultivatingSkill)
-    if (!currentSkill) return
-    
+    // 检查当前功法是否仍在自动修炼列表中
+    if (!autoCultivateStates.value[skillId]) {
+      stopAutoCultivate()
+      return
+    }
+
+    // 获取当前功法
+    const currentSkill = store.fullLearnedSkills.find(skill => skill.id === skillId)
+    if (!currentSkill) {
+      stopAutoCultivate()
+      return
+    }
+
     // 检查是否可以修炼当前功法
-    const canCultivate = currentSkill.currentMaxLayer < currentSkill.layers.length || 
+    const canCultivate = currentSkill.currentMaxLayer < currentSkill.layers.length ||
       !currentSkill.layersDetails.find(layer => layer.layer === currentSkill.layers.length)?.isCompleted
-    
+
     // 检查是否有足够的功法点
     if (canCultivate && attributeStore.SPT.val >= 1) {
       // 执行修炼
-      store.cultivateWithSkillPoints(store.currentCultivatingSkill)
+      store.cultivateWithSkillPoints(skillId)
     } else if (!canCultivate) {
       // 功法已圆满，停止自动修炼
-      autoCultivate.value = false
+      autoCultivateStates.value[skillId] = false
+      stopAutoCultivate()
     }
   }, AUTO_CULTIVATE_INTERVAL / store.cultivationSpeed)
 }
@@ -78,30 +108,17 @@ const stopAutoCultivate = () => {
   }
 }
 
-// 自动修炼开关变化处理
-const handleAutoCultivateChange = (value) => {
-  autoCultivate.value = value
-  if (value) {
-    startAutoCultivate()
-  } else {
-    stopAutoCultivate()
-  }
-}
-
 // 监听修炼速度变化，重新计算自动修炼间隔
 let lastCultivationSpeed = store.cultivationSpeed
 store.$subscribe((mutation, state) => {
-  if (store.cultivationSpeed !== lastCultivationSpeed && autoCultivate.value) {
+  if (store.cultivationSpeed !== lastCultivationSpeed) {
     lastCultivationSpeed = store.cultivationSpeed
-    stopAutoCultivate()
-    startAutoCultivate()
-  }
-})
-
-// 组件挂载时初始化
-onMounted(() => {
-  if (autoCultivate.value) {
-    startAutoCultivate()
+    // 重新启动当前正在修炼的功法的自动修炼
+    const activeSkillId = Object.keys(autoCultivateStates.value).find(id => autoCultivateStates.value[id])
+    if (activeSkillId) {
+      stopAutoCultivate()
+      startAutoCultivate(parseInt(activeSkillId))
+    }
   }
 })
 
@@ -118,57 +135,45 @@ onUnmounted(() => {
         <span class="label">Current Skill Points:</span>
         <span class="value">{{ Math.floor(attributeStore.SPT.val) }}</span>
       </div>
-      <div class="auto-cultivate-switch">
-        <span class="label">Auto Cultivate:</span>
-        <el-switch
-          v-model="autoCultivate"
-          @change="handleAutoCultivateChange"
-        />
+      <div class="cultivation-speed-display">
+        <span class="label">Cultivation Speed:</span>
+        <span class="value">{{ store.cultivationSpeed }}x</span>
       </div>
     </div>
-    
+
     <!-- Skill List -->
     <div class="skill-list">
-      <div 
-        v-for="skill in store.fullLearnedSkills" 
-        :key="skill.id" 
-        class="skill-card"
-        :class="{ 'skill-card-selected': store.currentCultivatingSkill === skill.id }"
-        @click="store.setCurrentCultivatingSkill(skill.id)"
-      >
+      <div v-for="skill in store.fullLearnedSkills" :key="skill.id" class="skill-card" :class="{
+        'skill-not-started': skill.currentMaxLayer === 0,
+        'skill-cultivating': autoCultivateStates[skill.id],
+        'skill-perfected': skill.isMaxed
+      }">
         <div class="skill-header">
           <div class="skill-info">
             <div class="name-container">
               <h4 class="skill-name">{{ skill.name }}</h4>
-              <div v-if="store.currentCultivatingSkill === skill.id" class="cultivating-badge">
-                Currently Cultivating
-              </div>
-              <div v-if="skill.isMaxed" class="perfection-badge">
-                Perfection
-              </div>
             </div>
-            <p class="skill-description">{{ skill.description }}</p>
           </div>
           <div class="skill-actions">
             <div class="skill-level">
               <span class="level-value">{{ skill.currentMaxLayer }}/{{ skill.layers.length }}</span>
+              <div class="skill-auto-cultivate-btn">
+                <el-button size="small" type="primary" round class="custom-cultivate-btn capsule-btn"
+                  :class="{ 'active': autoCultivateStates[skill.id] }"
+                  @click="handleAutoCultivateChange(skill.id, !autoCultivateStates[skill.id])">
+                  <el-icon class="play-icon" v-if="autoCultivateStates[skill.id]">
+                    <VideoPause />
+                  </el-icon>
+                  <el-icon class="play-icon" v-else>
+                    <VideoPlay />
+                  </el-icon>
+                  {{ autoCultivateStates[skill.id] ? 'Stop' : 'Start' }}
+                </el-button>
+              </div>
             </div>
             <div class="action-buttons">
-              <el-button 
-                v-if="!skill.isMaxed"
-                size="small" 
-                type="primary"
-                @click.stop="store.cultivateWithSkillPoints(skill.id)"
-                class="custom-cultivate-btn"
-              >
-                Cultivate
-              </el-button>
-              <el-button 
-                size="small" 
-                type="text"
-                @click.stop="toggleSkillCollapse(skill.id)"
-                class="custom-collapse-btn"
-              >
+              <el-button size="small" type="text" @click.stop="toggleSkillCollapse(skill.id)"
+                class="custom-collapse-btn">
                 <el-icon v-if="collapsedSkills[skill.id]">
                   <ArrowDown />
                 </el-icon>
@@ -179,70 +184,60 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-        
+
         <!-- Layer List with Collapse Animation -->
         <transition name="collapse">
           <div class="layers-list" v-if="!collapsedSkills[skill.id]">
-          <template v-for="(layer, index) in skill.layersDetails" :key="layer.layer">
-            <div class="layer-item-wrapper">
-              <div 
-                class="layer-item"
-                :class="{ 
-                  'layer-completed': layer.isCompleted, 
-                  'layer-current': layer.layer === skill.currentMaxLayer && !layer.isCompleted 
-                }"
-              >
-                <div class="layer-header">
-                  <div class="layer-info">
-                    <h5 class="layer-name">
-                      <span class="layer-number">Layer {{ arabicToChinese(layer.layer) }}</span>
-                      {{ layer.name }}
-                      <span v-if="layer.layer === skill.currentMaxLayer && !layer.isCompleted" class="status-current">Cultivating</span>
-                    </h5>
-                    <p class="layer-description">{{ layer.description }}</p>
+            <template v-for="(layer, index) in skill.layersDetails" :key="layer.layer">
+              <div class="layer-item-wrapper">
+                <div class="layer-item" :class="{
+                  'layer-completed': layer.isCompleted,
+                  'layer-current': layer.layer === skill.currentMaxLayer && !layer.isCompleted
+                }" :style="{
+                  borderColor: layer.layer === skill.currentMaxLayer && !layer.isCompleted
+                    ? `rgba(212, 175, 55, ${0.2 + (layer.progressPercentage / 100) * 0.8})`
+                    : '',
+                  backgroundColor: layer.layer === skill.currentMaxLayer && !layer.isCompleted
+                    ? `rgba(212, 175, 55, ${0.02 + (layer.progressPercentage / 100) * 0.1})`
+                    : ''
+                }">
+                  <div class="layer-header">
+                    <div class="layer-info">
+                      <h5 class="layer-name">
+                        <span class="layer-number">Layer {{ arabicToChinese(layer.layer) }}</span>
+                        {{ layer.name }}
+                      </h5>
+                      <p class="layer-description">{{ layer.description }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Layer Progress Bar -->
+                  <div class="layer-progress-section">
+                    <div class="progress-info">
+                      <span class="progress-text">
+                        {{ layer.currentProgress }}/{{ layer.maxProgress }}
+                      </span>
+                    </div>
+                    <div class="progress-bar-container">
+                      <div class="progress-bar" :style="{
+                        width: `${layer.progressPercentage}%`,
+                        background: `linear-gradient(to right, rgba(255, 255, 255, 0.15) 0%, rgba(212, 175, 55, 0.8) ${layer.progressPercentage}%)`
+                      }"></div>
+                    </div>
                   </div>
                 </div>
-                
-                <!-- Layer Progress Bar -->
-            <div class="layer-progress-section">
-              <div class="progress-info">
-                <span class="progress-text">
-                  {{ layer.currentProgress }}/{{ layer.maxProgress }}
-                </span>
-                <span 
-                  v-if="!layer.isCompleted && layer.currentProgress > 0" 
-                  class="progress-percentage"
-                >
-                  {{ layer.progressPercentage }}%
-                </span>
-              </div>
-              <div class="progress-bar-container">
-                <div 
-                  class="progress-bar" 
-                  :style="{
-                    width: `${layer.progressPercentage}%`,
-                    backgroundColor: getProgressBarColor(layer.progressPercentage)
-                  }"
-                ></div>
-              </div>
-            </div>
-              </div>
-              <!-- Layer Connection Line -->
-              <div 
-                v-if="index < skill.layersDetails.length - 1" 
-                class="layer-connection"
-                :class="{
+                <!-- Layer Connection Line -->
+                <div v-if="index < skill.layersDetails.length - 1" class="layer-connection" :class="{
                   'connected': layer.isCompleted,
                   'current': layer.layer === skill.currentMaxLayer && !layer.isCompleted
-                }"
-              ></div>
-            </div>
-          </template>
-        </div>
+                }"></div>
+              </div>
+            </template>
+          </div>
         </transition>
       </div>
     </div>
-    
+
     <!-- Empty State -->
     <div v-if="store.learnedSkillsCount === 0" class="empty-state">
       <p>You haven't learned any skills yet</p>
@@ -256,7 +251,7 @@ onUnmounted(() => {
   padding: 12px;
   background-color: rgba(0, 0, 0, 0.15);
   border-radius: 10px;
-  
+
   .skill-title {
     font-size: 18px;
     font-weight: 600;
@@ -265,7 +260,7 @@ onUnmounted(() => {
     padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   }
-  
+
   .skill-header-section {
     display: flex;
     justify-content: space-between;
@@ -274,7 +269,7 @@ onUnmounted(() => {
     flex-wrap: wrap;
     gap: 12px;
   }
-  
+
   .skill-points-display {
     display: flex;
     align-items: center;
@@ -284,36 +279,38 @@ onUnmounted(() => {
     border-radius: 20px;
     border: 1px solid rgba(230, 162, 60, 0.4);
     width: fit-content;
-    
+
     .label {
       font-size: 14px;
       color: #e6a23c;
     }
-    
+
     .value {
       font-size: 16px;
       font-weight: 600;
       color: #e6a23c;
     }
   }
-  
-  .auto-cultivate-switch {
+
+  .cultivation-speed-display {
     display: flex;
     align-items: center;
     gap: 8px;
-    
+    background-color: rgba(88, 166, 255, 0.15);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(88, 166, 255, 0.4);
+    width: fit-content;
+
     .label {
       font-size: 14px;
-      color: #a0a8b3;
+      color: #85d7ff;
     }
-    
-    :deep(.el-switch) {
-      --el-switch-on-color: #67c23a;
-      --el-switch-off-color: #a0a8b3;
-      --el-switch-on-border-color: #67c23a;
-      --el-switch-off-border-color: #a0a8b3;
-      --el-switch-core-height: 22px;
-      --el-switch-core-width: 40px;
+
+    .value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #85d7ff;
     }
   }
 }
@@ -327,17 +324,17 @@ onUnmounted(() => {
   padding: 12px;
   background-color: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  
+
   .overview-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+
     .label {
       font-size: 14px;
       color: #a0a8b3;
     }
-    
+
     .value {
       font-size: 16px;
       font-weight: 600;
@@ -355,97 +352,115 @@ onUnmounted(() => {
 
 // 功法卡片
 .skill-card {
-  background-color: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 14px;
+  border-radius: 10px;
+  padding: 16px;
   transition: all 0.3s ease;
-  cursor: pointer;
-  
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.12);
-    border-color: rgba(88, 166, 255, 0.6);
-  }
-  
-  // 选中状态样式
-  &.skill-card-selected {
-    border-color: rgba(88, 166, 255, 0.9);
-  }
-  
+  cursor: default;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+// 未开始修炼的功法样式
+.skill-not-started {
+  filter: grayscale(0.7);
+  opacity: 0.7;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+// 正在修炼的功法样式
+.skill-cultivating {
+  /* 移除特殊样式，只保留默认样式 */
+}
+
+// 修炼圆满的功法样式
+.skill-perfected {
+  /* 移除特殊样式，只保留默认样式 */
+}
+
+// 功法卡片内部样式
+.skill-card {
   .skill-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 12px;
     gap: 12px;
-    
+
     .skill-info {
       flex: 1;
-      
+      min-width: 0;
+
       .name-container {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 4px;
+        gap: 10px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
       }
-      
+
       .skill-name {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
         color: #f0f5fa;
         margin: 0;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      
-      .cultivating-badge {
-        background-color: rgba(230, 162, 60, 0.25);
-        color: #e6a23c;
-        font-size: 11px;
-        font-weight: 500;
-        padding: 2px 8px;
-        border-radius: 14px;
-        border: 1px solid rgba(230, 162, 60, 0.6);
-      }
-      
-      .perfection-badge {
-        background-color: rgba(103, 194, 58, 0.25);
-        color: #67c23a;
-        font-size: 11px;
-        font-weight: 500;
-        padding: 2px 8px;
-        border-radius: 14px;
-        border: 1px solid rgba(103, 194, 58, 0.6);
-      }
-      
-      .custom-cultivate-btn {
-        background: linear-gradient(135deg, #58a6ff 0%, #388bfd 100%);
-        border: none;
-        border-radius: 6px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(88, 166, 255, 0.3);
-        
-        &:hover {
-          background: linear-gradient(135deg, #388bfd 0%, #1f6feb 100%);
-          box-shadow: 0 4px 12px rgba(88, 166, 255, 0.4);
-        }
-      }
-      
+
       .custom-collapse-btn {
         color: #8b949e;
         transition: all 0.3s ease;
-        border-radius: 6px;
-        padding: 4px 8px;
-        
+        border-radius: 4px;
+        padding: 2px 6px;
+        min-width: auto;
+        height: auto;
+
         &:hover {
           color: #58a6ff;
           background-color: rgba(88, 166, 255, 0.1);
         }
-        
+
         .el-icon {
-          font-size: 16px;
+          font-size: 14px;
         }
       }
-      
+
+      .custom-cultivate-btn {
+        min-width: auto;
+        height: auto;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &.capsule-btn {
+          border-radius: 20px;
+          background-color: rgba(212, 175, 55, 0.8);
+          /* 与功法层级一致的淡金色 */
+          color: #fff;
+          border: none;
+          font-weight: 500;
+
+          &:hover {
+            background-color: #d4af37;
+            /* 与功法层级一致的深金色 */
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+          }
+
+          &.active {
+            background-color: #d4af37;
+            /* 与功法层级一致的深金色 */
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.5);
+          }
+        }
+      }
+
       .skill-description {
         font-size: 13px;
         color: #a0a8b3;
@@ -453,30 +468,30 @@ onUnmounted(() => {
         line-height: 1.5;
       }
     }
-    
+
     .skill-actions {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 8px;
-      
+      gap: 10px;
+
       .skill-level {
         display: flex;
         align-items: center;
-        gap: 8px;
-        
-        .level-label {
-          font-size: 14px;
-          color: #a0a8b3;
-        }
-        
+        gap: 12px;
+
         .level-value {
           font-size: 16px;
           font-weight: 600;
           color: #67c23a;
+          white-space: nowrap;
+        }
+
+        .skill-auto-cultivate-btn {
+          /* 继承自定义按钮样式 */
         }
       }
-      
+
       .action-buttons {
         display: flex;
         gap: 8px;
@@ -506,7 +521,7 @@ onUnmounted(() => {
   flex-direction: row;
   gap: 0;
   overflow-x: auto;
-  padding: 6px 8px 12px;
+  padding: 16px;
   scrollbar-width: thin;
   scrollbar-color: rgba(88, 166, 255, 0.6) transparent;
   background-color: rgba(0, 0, 0, 0.1);
@@ -515,16 +530,16 @@ onUnmounted(() => {
   margin-top: 8px;
   max-height: 200px;
   opacity: 1;
-  
+
   &::-webkit-scrollbar {
     height: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 3px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background-color: rgba(88, 166, 255, 0.6);
     border-radius: 3px;
@@ -535,24 +550,27 @@ onUnmounted(() => {
 .layer-connection {
   display: flex;
   align-items: center;
-  width: 60px;
+  width: 50px;
   position: relative;
-  margin: 0;
-  
+  margin: 0 8px;
+
   &::after {
     content: '';
     flex: 1;
-    height: 2px;
+    height: 3px;
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 1px;
+    transition: background-color 0.3s ease;
   }
-  
+
   &.connected::after {
-    background-color: rgba(212, 175, 55, 0.6); /* 淡金色 */
+    background-color: rgba(212, 175, 55, 0.8);
+    /* 淡金色 */
   }
-  
+
   &.current::after {
-    background-color: rgba(88, 166, 255, 0.6); /* 蓝色 */
+    background-color: rgba(255, 255, 255, 0.15);
+    /* 蓝色 */
   }
 }
 
@@ -561,7 +579,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   position: relative;
-  
+
   &:not(:last-child) {
     margin-right: 0;
   }
@@ -570,51 +588,59 @@ onUnmounted(() => {
 // 层级项
 .layer-item {
   background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  padding: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  padding: 16px;
   transition: all 0.3s ease;
-  width: 140px;
+  width: 70px;
+  height: 70px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  height: fit-content;
-  min-height: 70px;
+  align-items: center;
+  justify-content: center;
   margin: 0;
-  
+
   &:hover {
     background-color: rgba(255, 255, 255, 0.08);
   }
-  
+
   &.layer-completed {
-    border-color: rgba(212, 175, 55, 0.6); /* 淡金色，与进度条一致 */
-    border-width: 1px;
-    background-color: rgba(212, 175, 55, 0.08); /* 淡金色背景 */
+    border-color: rgba(212, 175, 55, 0.6);
+    /* 淡金色，与进度条一致 */
+    border-width: 2px;
+    background-color: rgba(212, 175, 55, 0.08);
+    /* 淡金色背景 */
   }
-  
+
   &.layer-current {
-    border-color: rgba(88, 166, 255, 0.6);
-    border-width: 1px;
-    background-color: rgba(88, 166, 255, 0.08);
+    border-width: 2px;
+    /* 移除固定蓝色，改为根据进度的动态样式 */
   }
-  
+
   &.layer-locked {
-    border-width: 1px;
+    border-width: 2px;
     opacity: 0.5;
     background-color: rgba(255, 255, 255, 0.03);
   }
-  
+
   .layer-header {
     display: flex;
     flex-direction: column;
     gap: 4px;
     margin-bottom: 0;
-    
+    align-items: center;
+    text-align: center;
+    width: 100%;
+
     .layer-info {
       flex: 1;
-      
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
       .layer-name {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
         color: #f0f5fa;
         margin: 0;
@@ -622,71 +648,56 @@ onUnmounted(() => {
         overflow: hidden;
         text-overflow: ellipsis;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-between;
-        
+        justify-content: center;
+
         .layer-number {
           color: #a0a8b3;
-          margin-right: 4px;
-        }
-        
-        .status-current {
-          color: #58a6ff;
-          font-size: 11px;
-          font-weight: 500;
-          margin-left: 4px;
+          margin-right: 0;
+          margin-bottom: 2px;
+          font-size: 10px;
         }
       }
-      
+
       .layer-description {
-        font-size: 11px;
-        color: #a0a8b3;
-        margin: 0;
-        line-height: 1.4;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        display: none;
       }
     }
-    
+
     .layer-status {
       display: none;
     }
   }
-  
+
   // 层级进度条
   .layer-progress-section {
     margin-bottom: 0;
     padding-bottom: 0;
-    
+    width: 100%;
+
     .progress-info {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       margin-bottom: 2px;
-      font-size: 11px;
-      
+      font-size: 10px;
+
       .progress-text {
         color: #a0a8b3;
-      }
-      
-      .progress-percentage {
-        color: #58a6ff;
-        font-weight: 500;
+        white-space: nowrap;
       }
     }
-    
+
     .progress-bar-container {
       width: 100%;
-      height: 4px;
+      height: 3px;
       background-color: rgba(255, 255, 255, 0.15);
-      border-radius: 2px;
+      border-radius: 1.5px;
       overflow: hidden;
-      
+
       .progress-bar {
         height: 100%;
-        border-radius: 2px;
+        border-radius: 1.5px;
         transition: width 0.3s ease;
       }
     }
@@ -698,12 +709,12 @@ onUnmounted(() => {
   text-align: center;
   padding: 40px 20px;
   color: #a0a8b3;
-  
+
   p {
     margin: 0 0 8px 0;
     font-size: 16px;
   }
-  
+
   .empty-hint {
     font-size: 14px;
     color: #7e8690;

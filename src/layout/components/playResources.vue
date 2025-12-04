@@ -113,7 +113,6 @@ const list1 = ['QB', 'EP', 'MP']
     background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
     color: #e6edf3;
     border-radius: 12px;
-    padding: 16px;
     margin-bottom: 20px;
     border: 1px solid var(--el-border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);

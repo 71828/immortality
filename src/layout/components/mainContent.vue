@@ -55,7 +55,7 @@ const activeTab = ref('skills')
     min-height: 100vh;
 
     .left {
-        width: 300px;
+        width: 240px;
     }
 
     .center {

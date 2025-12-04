@@ -9,10 +9,24 @@ const playAttr = playAttribute()
 <template>
     <div class="head">
         <div class="left-section">
+            <div class="attribute-item">
+                <div style="display: flex; align-items: center; justify-content: flex-start;">
+                    <div class="label">{{ playAttr.Life.name }}</div>
+                    <div class="value">{{ playAttr.Life.baseVal + useMainStore().year }}/{{ playAttr.Life.max }}</div>
+                </div>
+            </div>
+            <div class="attribute-item">
+                <div style="display: flex; align-items: center; justify-content: flex-start;">
+                    <div class="label">{{ playAttr.SPIRIT_STONE.name }}</div>
+                    <div class="value">{{ Math.floor(playAttr.SPIRIT_STONE.val) }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="center-section">
             <div class="attribute-item exp-item">
                 <div
-                    style="display: flex; flex-direction: column; align-items: flex-start; width: 100%; height: 100%; justify-content: flex-end;">
-                    <div style="display: flex; align-items: center; justify-content: flex-start;">
+                    style="display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: flex-end;">
+                    <div style="display: flex; align-items: center; justify-content: center;">
                         <div class="label">{{
                             playAttr.expStages[playAttr.EXP.stage].levels[playAttr.EXP.stageLevel].name }}</div>
                         <div class="value exp-value"> {{ Math.floor(playAttr.EXP.val) }}/{{ playAttr.EXP.max }}</div>
@@ -25,18 +39,6 @@ const playAttr = playAttribute()
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="attribute-item">
-                <div style="display: flex; align-items: center; justify-content: flex-start;">
-                    <div class="label">{{ playAttr.Life.name }}</div>
-                    <div class="value">{{ playAttr.Life.baseVal + useMainStore().year }}/{{ playAttr.Life.max }}</div>
-                </div>
-            </div>
-            <div class="attribute-item">
-                <div style="display: flex; align-items: center; justify-content: flex-start;">
-                    <div class="label">{{ playAttr.SPIRIT_STONE.name }}</div>
-                    <div class="value">{{ Math.floor(playAttr.SPIRIT_STONE.val) }}</div>
                 </div>
             </div>
         </div>
@@ -60,7 +62,7 @@ const playAttr = playAttribute()
     font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
     animation: fadeInDown 0.5s ease forwards;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     padding: 0 20px;
 }
@@ -112,12 +114,12 @@ const playAttr = playAttribute()
 }
 
 /* 为不同属性添加特定颜色 */
-.attribute-item:nth-child(2) .value {
+.attribute-item:nth-child(1) .value {
     color: #7ee787;
 }
 
-.attribute-item:nth-child(3) .value {
-    color: #ffb730;
+.attribute-item:nth-child(2) .value {
+    color: #85d7ff;
 }
 
 /* 修为数值显示为灰色 */
@@ -127,13 +129,13 @@ const playAttr = playAttribute()
 
 .exp-item {
     flex-direction: column;
-    width: 300px;
+    width: 600px;
     height: 40px;
     border: 1px solid var(--el-border-color);
     border-radius: 2px;
     padding: 8px 12px;
     padding-left: 10px;
-    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    background: transparent;
     .grid-progress {
         width: 100%;
     }
@@ -142,7 +144,7 @@ const playAttr = playAttribute()
 /* 格子进度条样式 */
 .grid-progress {
     margin-top: 6px;
-    width: 200px;
+    width: 100%;
 }
 
 .grid-container {
@@ -154,9 +156,9 @@ const playAttr = playAttribute()
 }
 
 .grid-item {
-    width: 100px;
+    flex: 1;
     height: 1px;
-    background: rgba(239, 242, 245, 0.856);
+    background: #8b949e;
     border-radius: 0;
     transition: all 0.3s ease;
 }
@@ -170,6 +172,10 @@ const playAttr = playAttribute()
 .center-section {
     flex: 1;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 @keyframes fadeInDown {
