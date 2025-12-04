@@ -91,39 +91,52 @@ export const useActionData = defineStore('actionData', () => {
     // 清空现有列表
     actionList.value = []
     
-    // 只添加id为1的动作
-    const actionConfig = actionConfigurations.value.find(item => item.uniqueId === 1)
+    // 要添加的初始动作ID列表
+    const initialActionIds = [1, 3, 4] // 添加砍树动作、功法修炼动作和挖矿动作
     
-    if (actionConfig) {
-      // 复制动作配置，避免直接修改原配置
-      const copiedConfig = JSON.parse(JSON.stringify(actionConfig))
+    // 遍历要添加的初始动作ID
+    initialActionIds.forEach((actionId, index) => {
+      const actionConfig = actionConfigurations.value.find(item => item.uniqueId === actionId)
       
-      // 为砍树动作动态添加levelCallback，用于更新任务进度
-      if (copiedConfig.name === 'chopping') {
-        copiedConfig.proficiency.levelCallback = (item) => {
-          // 调用任务store的updateActionLevelTaskProgress方法更新任务进度
-          const tasks = taskStore();
-          // 这里需要计算当前等级，假设executeCount就是等级
-          const currentLevel = item.proficiency.executeCount;
-          tasks.updateActionLevelTaskProgress(item.uniqueId, currentLevel);
+      if (actionConfig) {
+        // 复制动作配置，避免直接修改原配置
+        const copiedConfig = JSON.parse(JSON.stringify(actionConfig))
+        
+        // 为砍树动作动态添加levelCallback，用于更新任务进度
+        if (copiedConfig.name === 'chopping') {
+          copiedConfig.proficiency.levelCallback = (item) => {
+            // 调用任务store的updateActionLevelTaskProgress方法更新任务进度
+            const tasks = taskStore();
+            // 这里需要计算当前等级，假设executeCount就是等级
+            const currentLevel = item.proficiency.executeCount;
+            tasks.updateActionLevelTaskProgress(item.uniqueId, currentLevel);
+          }
         }
-      }
-      
-      // 为突破动作动态添加levelCallback
-      if (copiedConfig.name === 'breakthrough') {
-        copiedConfig.proficiency.levelCallback = (item) => {
-          const playAttr = playAttributeStore();
-          // 调用突破方法，突破到下一阶段
-          playAttr.breakthrough();
+        
+        // 为突破动作动态添加levelCallback
+        if (copiedConfig.name === 'breakthrough') {
+          copiedConfig.proficiency.levelCallback = (item) => {
+            const playAttr = playAttributeStore();
+            // 调用突破方法，突破到下一阶段
+            playAttr.breakthrough();
+          }
         }
+        
+        // 为功法修炼动作动态添加levelCallback（如果需要）
+        if (copiedConfig.name === 'skillCultivation') {
+          copiedConfig.proficiency.levelCallback = (item) => {
+            // 可以在这里添加功法修炼等级提升的特殊逻辑
+            // 例如：增加功法点上限或提升修炼效率
+          }
+        }
+        
+        const action = new Action({
+          ...copiedConfig,
+          id: index
+        })
+        actionList.value.push(action)
       }
-      
-      const action = new Action({
-        ...copiedConfig,
-        id: 0
-      })
-      actionList.value.push(action)
-    }
+    })
   }
 
   /**

@@ -90,7 +90,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     val: 100,
     max: 100,
     perSecond: 1,
-    visable: false,
+    visable: true,
     haveMax: true
   });
 
@@ -171,13 +171,13 @@ export const playAttribute = defineStore('playAttribute', () => {
   });
 
   /**
-   * 悟性属性 ()
+   * 运势属性 (Luck)
    * 影响角色的随机事件和机遇
    * 
    * 属性说明：
    * - name: 属性名称标识
-   * - val: 当前悟性值
-   * - max: 最大悟性值  
+   * - val: 当前运势值
+   * - max: 最大运势值  
    * - visable: 是否在UI中显示
    * - haveMax: 是否有最大值限制
    */
@@ -189,7 +189,43 @@ export const playAttribute = defineStore('playAttribute', () => {
     haveMax: false
   });
 
+  /**
+   * 功法点属性 (Skill Points)
+   * 用于功法修炼和突破
+   * 
+   * 属性说明：
+   * - name: 属性名称标识
+   * - val: 当前功法点
+   * - max: 最大功法点
+   * - visable: 是否在UI中显示（设为false，不在左侧面板显示）
+   * - haveMax: 是否有最大值限制（设为false，无上限）
+   */
+  const SPT = ref({
+    name: 'Skill Points',
+    val: 500,
+    max: 0,
+    visable: false,
+    haveMax: false
+  });
 
+  /**
+   * 灵石属性 (Spirit Stone)
+   * 用于游戏内交易和资源兑换
+   * 
+   * 属性说明：
+   * - name: 属性名称标识
+   * - val: 当前灵石数量
+   * - max: 最大灵石数量（设为0，无上限）
+   * - visable: 是否在UI中显示（设为true，在左侧面板显示）
+   * - haveMax: 是否有最大值限制（设为false，无上限）
+   */
+  const SPIRIT_STONE = ref({
+    name: 'Spirit Stone',
+    val: 0,
+    max: 0,
+    visable: true,
+    haveMax: false
+  });
 
   /**
    * 设置属性值
@@ -228,6 +264,8 @@ export const playAttribute = defineStore('playAttribute', () => {
       case 'CP': attrRef = CP; break;
       case 'SS': attrRef = SS; break;
       case 'SP': attrRef = SP; break;
+      case 'SPT': attrRef = SPT; break;
+      case 'SPIRIT_STONE': attrRef = SPIRIT_STONE; break;
       default: return new Error(`Attribute ${attrTarget} not found`);
     }
 
@@ -369,15 +407,14 @@ export const playAttribute = defineStore('playAttribute', () => {
     const tasks = taskStore();
     tasks.updateBreakthroughTaskProgress();
     
-    // 突破到第二阶段（stage 1）时解锁显示法力属性
+    // 突破到第二阶段（stage 1）时添加突破日志
     if (newStage === 1) {
-      MP.value.visable = true;
-      // 添加解锁法力属性的日志
+      // 添加突破成功日志
       const logs = logStore();
       logs.addLog({
         type: 'ACTION_COMPLETE',
-        title: 'Magic Power Attribute Unlocked',
-        description: 'Broke through to the second stage, successfully unlocked Magic Power attribute!'
+        title: 'Stage Breakthrough',
+        description: 'Successfully broke through to the second stage!'
       });
     }
 
@@ -425,6 +462,8 @@ export const playAttribute = defineStore('playAttribute', () => {
     CP,          // 悟性属性
     SS,          // 寿元属性
     SP,          // 运势属性
+    SPT,         // 功法点属性
+    SPIRIT_STONE, // 灵石属性
     setAttr,     // 设置属性值的方法
     regeneration,// 属性自动回复方法
     handleExpChange, // 处理修为变化的方法

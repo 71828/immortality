@@ -3,22 +3,16 @@ import { task } from '@/store/task'
 const alltask = task()
 </script>
 <template>
-    <div>
-        <div class="card">
-            
-            <!-- 当前活跃任务 - 移除进度条，保留数字进度 -->
-            <div v-if="alltask.activeTask" class="active-task">
-                <!-- 任务名称 -->
-                <div class="task-name">{{ alltask.activeTask.name }}</div>
-                <!-- 数字进度 -->
-                <div class="task-progress">{{ alltask.activeTask.progress.current }}/{{ alltask.activeTask.progress.target }}</div>
-            </div>
-        </div>
+    <div v-if="alltask.activeTask" class="task-container">
+        <!-- 任务名称 -->
+        <div class="task-name">{{ alltask.activeTask.name }}</div>
+        <!-- 数字进度 -->
+        <div class="task-progress">{{ alltask.activeTask.progress.current }}/{{ alltask.activeTask.progress.target }}</div>
     </div>
 </template>
 
 <style lang="scss" scoped>
-.card {
+.task-container {
     background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
     color: #e6edf3;
     border-radius: 12px;
@@ -27,17 +21,9 @@ const alltask = task()
     border: 1px solid #30363d;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease;
-}
-
-/* 活跃任务样式 */
-.active-task {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 14px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .task-name {
@@ -50,11 +36,10 @@ const alltask = task()
 .task-progress {
     font-size: 13px;
     color: #58a6ff;
-    font-weight: 500;
     background: rgba(88, 166, 255, 0.1);
     padding: 4px 8px;
     border-radius: 4px;
-    align-self: flex-start;
+    font-weight: 500;
     min-width: 80px;
     text-align: center;
 }

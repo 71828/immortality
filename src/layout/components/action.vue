@@ -269,7 +269,7 @@ const isExecution = computed(() => {
 .foot .play-icon:hover {
     color: #58a6ff;
     background-color: rgba(88, 166, 255, 0.1);
-    transform: scale(1.05);
+    transform: none;
 }
 
 /* 动作项进入和离开动画 */

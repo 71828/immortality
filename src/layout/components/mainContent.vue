@@ -6,16 +6,16 @@ import log from './log.vue'
 import task from './task.vue'
 import executingActions from './executingActions.vue'
 import inventory from './inventory.vue'
+import skill from './skill.vue'
 
 // 初始化当前激活的tab，默认显示第一个标签页
-const activeTab = ref('actions')
+const activeTab = ref('skills')
 </script>
 <template>
     <div class="main-content">
         <div class="left">
-            <div class="card">
                 <playResources />
-            </div>
+          
         </div>
         <div class="center">
                 <!-- 展示当前执行中的动作 -->
@@ -29,11 +29,8 @@ const activeTab = ref('actions')
                     <el-tab-pane label="Bag" name="bag">
                         <inventory />
                     </el-tab-pane>
-                    <el-tab-pane label="Skills" name="skill">
-        
-                    </el-tab-pane>
-                    <el-tab-pane label="Friends" name="friend">
-        
+                    <el-tab-pane label="Skills" name="skills">
+                        <skill />
                     </el-tab-pane>
                 </el-tabs>
             </div>

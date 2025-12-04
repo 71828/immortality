@@ -12,23 +12,6 @@ const list1 = ['QB', 'EP', 'MP']
     <div>
         <div class="card">
             <div class="list">
-                <div class="item">
-                    <div class="cell" style="display: flex;justify-content: space-between;">
-                        <div class="label">{{
-                            playAttr.expStages[playAttr.EXP.stage].levels[playAttr.EXP.stageLevel].name }}
-
-                        </div>
-                        <div class="value">{{ Math.floor(playAttr.EXP.val) }}/{{ playAttr.EXP.max }}</div>
-
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="label">{{ playAttr.Life.name }}: {{ playAttr.Life.baseVal + useMainStore().year }}/{{ playAttr.Life.max }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="list">
                 <template v-for="(item, index) in list1" :key="index">
                     <div class="item" v-if="playAttr[item].visable">
                         <div class="cell">
@@ -48,8 +31,6 @@ const list1 = ['QB', 'EP', 'MP']
             </div>
         </div>
     </div>
-
-
 </template>
 <style lang="scss" scoped>
 .list {

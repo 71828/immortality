@@ -2,7 +2,7 @@
 import { playAttribute } from '@/store/playAttribute'
 const playAttr = playAttribute()
 
-const list1 = ['QB', 'EP', 'MP']
+const list1 = ['QB', 'EP', 'MP', 'SPIRIT_STONE']
 
 
 </script>

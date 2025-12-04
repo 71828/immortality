@@ -101,5 +101,91 @@ export const actionConfigurations = [
     frameAttributeChanges: [],
     // 突破动作没有等级提升属性变化
     levelAttributeChanges: []
+  },
+  /**
+   * Skill Cultivation Action Configuration
+   * Action to gain skill points for cultivation
+   */
+  {
+    uniqueId: 3,
+    name: 'skillCultivation',
+    proficiency: {
+      executeLimit: 0,          // 无执行次数限制
+      executeCount: 0,          // 初始执行次数为0
+      experience: 0,          // 初始动作修为为0
+      experiencePerSecond: 5,  // 每秒获得5点动作经验
+      maxExperience: 5,        // 当前等级经验上限为5
+      levelUpRate: 0.2,        // 每次升级经验上限增加20%
+    },
+    frameAttributeChanges: [
+      /**
+       * Mana Consumption per Frame
+       */
+      {
+        attributeTarget: 'MP',
+        keyTarget: 'val',
+        perSecond: -1.0,         // 每秒消耗1.0点法力值
+      },
+      /**
+       * Skill Points Gain per Frame
+       */
+      {
+        attributeTarget: 'SPT',
+        keyTarget: 'val',
+        perSecond: 2,           // 每秒获得2点功法点
+      }
+    ],
+  },
+  /**
+   * Mining Action Configuration
+   * Action to gain spirit stones
+   */
+  {
+    uniqueId: 4,
+    name: 'mining',
+    proficiency: {
+      executeLimit: 0,          // 无执行次数限制
+      executeCount: 0,          // 初始执行次数为0
+      experience: 0,          // 初始动作修为为0
+      experiencePerSecond: 4,  // 每秒获得4点动作经验
+      maxExperience: 4,        // 当前等级经验上限为4
+      levelUpRate: 0.2,        // 每次升级经验上限增加20%
+    },
+    frameAttributeChanges: [
+      /**
+       * Energy Consumption per Frame
+       */
+      {
+        attributeTarget: 'EP',
+        keyTarget: 'val',
+        perSecond: -1.5,         // 每秒消耗1.5点精力值
+      },
+      /**
+       * 每帧获得修为
+       */
+      {
+        attributeTarget: 'EXP',
+        keyTarget: 'val',
+        perSecond: 4,           // 每秒获得4点修为
+      },
+      /**
+       * Spirit Stone Gain per Frame
+       */
+      {
+        attributeTarget: 'SPIRIT_STONE',
+        keyTarget: 'val',
+        perSecond: 3,           // 每秒获得3点灵石
+      }
+    ],
+    levelAttributeChanges: [
+      /**
+       * 等级提升时增加气血上限
+       */
+      {
+        attributeTarget: 'QB',
+        keyTarget: 'max',
+        perLevel: 1,             // 每级增加1点气血上限
+      }
+    ]
   }
 ]

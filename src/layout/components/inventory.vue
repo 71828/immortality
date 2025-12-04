@@ -4,7 +4,7 @@ import { inventory } from '@/store/inventory'
 const inventoryStore = inventory()
 
 // 固定格子数量
-const gridSize = 16
+const gridSize = 6
 </script>
 <template>
   <div class="inventory-container">
@@ -17,12 +17,12 @@ const gridSize = 16
         class="inventory-slot"
       >
         <!-- 检查当前格子是否有物品 -->
-        <div v-if="inventoryStore.pack[index - 1]" class="item">
-          <div class="item-icon">{{ inventoryStore.pack[index - 1].icon }}</div>
+        <div v-if="inventoryStore.fullPackItems[index - 1]" class="item">
+          <div class="item-icon">{{ inventoryStore.fullPackItems[index - 1].name.substring(0, 1) }}</div>
           <div class="item-info">
-            <div class="item-name">{{ inventoryStore.pack[index - 1].name }}</div>
-            <div class="item-quantity">{{ inventoryStore.pack[index - 1].quantity }}</div>
+            <div class="item-name">{{ inventoryStore.fullPackItems[index - 1].name }}</div>
           </div>
+          <div class="item-quantity">{{ inventoryStore.fullPackItems[index - 1].quantity }}</div>
         </div>
       </div>
     </div>
@@ -48,25 +48,25 @@ const gridSize = 16
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 80px);
+  grid-template-rows: repeat(2, 80px);
   gap: 8px;
   flex-grow: 1;
   overflow-y: auto;
+  padding: 8px;
 }
 
 .inventory-slot {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  width: 100%;
-  aspect-ratio: 1;
+  border-radius: 4px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   transition: all 0.2s ease;
-  min-height: 80px;
   
   &:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -81,25 +81,26 @@ const gridSize = 16
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  gap: 4px;
+  padding: 4px;
+  gap: 2px;
+  position: relative;
 }
 
 .item-icon {
-  font-size: 24px;
-  margin-bottom: 4px;
+  font-size: 20px;
+  margin-bottom: 2px;
 }
 
 .item-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   width: 100%;
 }
 
 .item-name {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 500;
   color: #e6edf3;
   text-align: center;
@@ -110,11 +111,14 @@ const gridSize = 16
 }
 
 .item-quantity {
-  font-size: 10px;
+  font-size: 12px;
   color: #58a6ff;
   background: rgba(88, 166, 255, 0.1);
-  padding: 2px 6px;
-  border-radius: 8px;
+  padding: 1px 4px;
+  border-radius: 6px;
   font-weight: 600;
+  position: absolute;
+  top: 4px;
+  left: 4px;
 }
 </style>
