@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { skillStore } from '@/store/skill'
 import { playAttribute } from '@/store/playAttribute'
-import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
+import { ArrowDown, ArrowUp, VideoPlay, VideoPause } from '@element-plus/icons-vue'
 
 // 获取功法store
 const store = skillStore()
@@ -35,9 +35,9 @@ const toggleSkillCollapse = (skillId) => {
   collapsedSkills.value[skillId] = !collapsedSkills.value[skillId]
 }
 
-// 当功法所有层级完成时自动折叠
+// 当功法所有层级完成或未开始修炼时自动折叠
 store.fullLearnedSkills.forEach(skill => {
-  if (isSkillMaxed(skill)) {
+  if (isSkillMaxed(skill) || skill.currentMaxLayer === 0) {
     collapsedSkills.value[skill.id] = true
   }
 })
@@ -152,39 +152,32 @@ onUnmounted(() => {
           <div class="skill-info">
             <div class="name-container">
               <h4 class="skill-name">{{ skill.name }}</h4>
+              <div class="action-buttons">
+                <button 
+                  @click.stop="toggleSkillCollapse(skill.id)"
+                  class="custom-collapse-btn">
+                  <span v-if="collapsedSkills[skill.id]">▼</span>
+                  <span v-else>▲</span>
+                </button>
+              </div>
             </div>
           </div>
           <div class="skill-actions">
             <div class="skill-level">
               <span class="level-value">{{ skill.currentMaxLayer }}/{{ skill.layers.length }}</span>
               <div class="skill-auto-cultivate-btn">
-                <el-button size="small" type="primary" round class="custom-cultivate-btn capsule-btn"
+                <button 
+                  class="custom-cultivate-btn capsule-btn"
                   :class="{ 'active': autoCultivateStates[skill.id] }"
                   @click="handleAutoCultivateChange(skill.id, !autoCultivateStates[skill.id])">
-                  <el-icon class="play-icon" v-if="autoCultivateStates[skill.id]">
-                    <VideoPause />
-                  </el-icon>
-                  <el-icon class="play-icon" v-else>
-                    <VideoPlay />
-                  </el-icon>
+                  <span class="play-icon" v-if="autoCultivateStates[skill.id]">⏸</span>
+                  <span class="play-icon" v-else>▶</span>
                   {{ autoCultivateStates[skill.id] ? 'Stop' : 'Start' }}
-                </el-button>
+                </button>
               </div>
-            </div>
-            <div class="action-buttons">
-              <el-button size="small" type="text" @click.stop="toggleSkillCollapse(skill.id)"
-                class="custom-collapse-btn">
-                <el-icon v-if="collapsedSkills[skill.id]">
-                  <ArrowDown />
-                </el-icon>
-                <el-icon v-else>
-                  <ArrowUp />
-                </el-icon>
-              </el-button>
             </div>
           </div>
         </div>
-
         <!-- Layer List with Collapse Animation -->
         <transition name="collapse">
           <div class="layers-list" v-if="!collapsedSkills[skill.id]">
@@ -210,7 +203,6 @@ onUnmounted(() => {
                       <p class="layer-description">{{ layer.description }}</p>
                     </div>
                   </div>
-
                   <!-- Layer Progress Bar -->
                   <div class="layer-progress-section">
                     <div class="progress-info">
@@ -221,7 +213,7 @@ onUnmounted(() => {
                     <div class="progress-bar-container">
                       <div class="progress-bar" :style="{
                         width: `${layer.progressPercentage}%`,
-                        background: `linear-gradient(to right, rgba(255, 255, 255, 0.15) 0%, rgba(212, 175, 55, 0.8) ${layer.progressPercentage}%)`
+                        background: getProgressBarColor(layer.progressPercentage)
                       }"></div>
                     </div>
                   </div>

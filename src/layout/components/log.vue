@@ -36,7 +36,7 @@ const logs = log()
     margin: 12px 0 0 0;
     border: 1px solid var(--el-border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    flex-grow: 1;
+    height: 300px;
     display: flex;
     flex-direction: column;
 }

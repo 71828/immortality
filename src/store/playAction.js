@@ -92,7 +92,7 @@ export const useActionData = defineStore('actionData', () => {
     actionList.value = []
     
     // 要添加的初始动作ID列表
-    const initialActionIds = [1, 3, 4] // 添加砍树动作、功法修炼动作和挖矿动作
+    const initialActionIds = [1, 3, 4, 5] // 添加砍树动作、功法修炼动作、挖矿动作和休息动作
     
     // 遍历要添加的初始动作ID
     initialActionIds.forEach((actionId, index) => {

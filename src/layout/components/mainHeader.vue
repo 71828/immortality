@@ -131,7 +131,7 @@ const playAttr = playAttribute()
     flex-direction: column;
     width: 600px;
     height: 40px;
-    border: 1px solid var(--el-border-color);
+   
     border-radius: 2px;
     padding: 8px 12px;
     padding-left: 10px;

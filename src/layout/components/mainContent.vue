@@ -7,9 +7,33 @@ import task from './task.vue'
 import executingActions from './executingActions.vue'
 import inventory from './inventory.vue'
 import skill from './skill.vue'
+import ActionDetailCard from '@/components/ActionDetailCard.vue'
 
 // 初始化当前激活的tab，默认显示第一个标签页
 const activeTab = ref('skills')
+
+// 全局动作详情卡片状态管理
+const currentAction = ref(null)
+const isDetailCardVisible = ref(false)
+
+// 设置当前选中的动作
+const setCurrentAction = (action) => {
+  currentAction.value = action
+  isDetailCardVisible.value = true
+}
+
+// 清空当前选中的动作
+const clearCurrentAction = () => {
+  // 只隐藏卡片，不清空动作数据，这样当鼠标快速移动到另一个卡片时，内容不会显示为空
+  isDetailCardVisible.value = false
+  // 延迟清空动作数据，确保动画效果完成，并且避免鼠标快速切换时内容为空
+  setTimeout(() => {
+    // 只有当卡片仍然隐藏时才清空数据
+    if (!isDetailCardVisible.value) {
+      currentAction.value = null
+    }
+  }, 300)
+}
 </script>
 <template>
     <div class="main-content">
@@ -24,7 +48,10 @@ const activeTab = ref('skills')
             <div class="card">
                 <el-tabs v-model="activeTab" class="custom-tabs">
                     <el-tab-pane label="Actions" name="actions">
-                        <action />
+                        <action 
+                          :on-action-hover="setCurrentAction" 
+                          :on-action-leave="clearCurrentAction" 
+                        />
                     </el-tab-pane>
                     <el-tab-pane label="Bag" name="bag">
                         <inventory />
@@ -43,6 +70,11 @@ const activeTab = ref('skills')
 
         </div>
 
+        <!-- 全局动作详情卡片 -->
+        <ActionDetailCard 
+          :action="currentAction" 
+          :visible="isDetailCardVisible" 
+        />
 
     </div>
 </template>

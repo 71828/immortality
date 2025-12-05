@@ -8,7 +8,6 @@ const gridSize = 6
 </script>
 <template>
   <div class="inventory-container">
-    <div class="inventory-title">Storage Bag</div>
     <div class="inventory-grid">
       <!-- 固定格子布局 -->
       <div 

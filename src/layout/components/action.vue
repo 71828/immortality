@@ -1,6 +1,18 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, defineProps } from 'vue'
 import { useExecutionList, useActionData } from '@/store/playAction'
+
+// 接收父组件传递的事件处理函数
+const props = defineProps({
+  onActionHover: {
+    type: Function,
+    default: null
+  },
+  onActionLeave: {
+    type: Function,
+    default: null
+  }
+});
 
 // 初始化store实例
 const actionDataStore = useActionData();
@@ -11,9 +23,6 @@ function actionChange(item) {
     executionListStore.setExecutingAction(item);
 }
 
-// function isExecution(action) {
-//     console.log(executionList().list.find(ele => ele.id === action.id));
-// }
 const isExecution = computed(() => {
     return (action) => {
         return executionListStore.executingActions.some(ele => ele.uniqueId === action.uniqueId);
@@ -30,6 +39,8 @@ const isExecution = computed(() => {
                 class="item" 
                 :class="{ isExecution: isExecution(item) }"
                 @click="actionChange(item)"
+                @mouseenter="props.onActionHover && props.onActionHover(item)"
+                @mouseleave="props.onActionLeave && props.onActionLeave()"
             >
                 <div class="head">
                     <div class="name">{{ item.name }} </div>
@@ -109,9 +120,7 @@ const isExecution = computed(() => {
     background: #1a1d23;
 }
 
-.item.isExecution .bar-item {
-    background: #58a6ff;
-}
+
 
 .item.isExecution .play-icon {
     color: #58a6ff;

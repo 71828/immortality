@@ -187,5 +187,65 @@ export const actionConfigurations = [
         perLevel: 1,             // 每级增加1点气血上限
       }
     ]
+  },
+  /**
+   * Rest Action Configuration
+   * Action to restore health and energy
+   */
+  {
+    uniqueId: 5,
+    name: 'rest',
+    proficiency: {
+      executeLimit: 0,          // 无执行次数限制
+      executeCount: 0,          // 初始执行次数为0
+      experience: 0,          // 初始动作修为为0
+      experiencePerSecond: 1,  // 每秒获得1点动作经验，休息获得的经验较少
+      maxExperience: 1,        // 当前等级经验上限为1
+      levelUpRate: 0.2,        // 每次升级经验上限增加20%
+    },
+    frameAttributeChanges: [
+      /**
+       * Health Restoration per Frame
+       */
+      {
+        attributeTarget: 'QB',
+        keyTarget: 'val',
+        perSecond: 5,           // 每秒回复5点气血值
+      },
+      /**
+       * Energy Restoration per Frame
+       */
+      {
+        attributeTarget: 'EP',
+        keyTarget: 'val',
+        perSecond: 3,           // 每秒回复3点精力值
+      },
+      /**
+       * 每帧获得少量修为
+       */
+      {
+        attributeTarget: 'EXP',
+        keyTarget: 'val',
+        perSecond: 1,           // 每秒获得1点修为，休息获得的修为较少
+      }
+    ],
+    levelAttributeChanges: [
+      /**
+       * 等级提升时增加气血上限
+       */
+      {
+        attributeTarget: 'QB',
+        keyTarget: 'max',
+        perLevel: 2,             // 每级增加2点气血上限，休息动作更注重气血
+      },
+      /**
+       * 等级提升时增加精力上限
+       */
+      {
+        attributeTarget: 'EP',
+        keyTarget: 'max',
+        perLevel: 1,             // 每级增加1点精力上限
+      }
+    ]
   }
 ]
