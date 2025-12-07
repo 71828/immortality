@@ -8,9 +8,6 @@
  * @property {string} description - 层级描述
  * @property {number} maxProgress - 层级最大进度
  * @property {Object} effects - 层级效果
- * @property {number} effects.attack - 攻击加成
- * @property {number} effects.defense - 防御加成
- * @property {number} effects.health - 生命值加成
  */
 
 /**
@@ -30,7 +27,7 @@
  * @type {SkillConfig[]}
  */
 export const skillConfigurations = [
-  // 基础功法
+  // 功法
   { id: 1,
     name: 'Yin Qi Jue',
     description: 'Entry-level Qi cultivation technique, suitable for beginners',
@@ -40,9 +37,6 @@ export const skillConfigurations = [
         layer: 1,
         maxProgress: 10,
         effects: { 
-          attack: 5, 
-          defense: 2, 
-          health: 50,
           'MP.max': 10, // 法力值上限增加10
           'EP.perSecond': 0.05 // 精力值回复速度增加0.05/秒
         }
@@ -51,9 +45,6 @@ export const skillConfigurations = [
         layer: 2,
         maxProgress: 20,
         effects: { 
-          attack: 8, 
-          defense: 4, 
-          health: 80,
           'MP.max': 20, // 法力值上限增加20
           'EP.max': 5, // 精力值上限增加5
           'QB.max': 10 // 气血值上限增加10
@@ -63,9 +54,6 @@ export const skillConfigurations = [
         layer: 3,
         maxProgress: 30,
         effects: { 
-          attack: 12, 
-          defense: 6, 
-          health: 120,
           'MP.perSecond': 0.1, // 法力值回复速度增加0.1/秒
           'EP.perSecond': 0.05, // 精力值回复速度增加0.05/秒
           'QB.perSecond': 0.05 // 气血值回复速度增加0.05/秒
@@ -83,9 +71,6 @@ export const skillConfigurations = [
         layer: 1,
         maxProgress: 100,
         effects: { 
-          attack: 5, 
-          defense: 2, 
-          health: 50,
           'MP.max': 15, // 法力值上限增加15
           'SPT.val': 5 // 功法点增加5
         }
@@ -94,9 +79,6 @@ export const skillConfigurations = [
         layer: 2,
         maxProgress: 200,
         effects: { 
-          attack: 8, 
-          defense: 4, 
-          health: 80,
           'MP.max': 25, // 法力值上限增加25
           'EP.max': 8, // 精力值上限增加8
           'EP.perSecond': 0.08 // 精力值回复速度增加0.08/秒
@@ -106,9 +88,6 @@ export const skillConfigurations = [
         layer: 3,
         maxProgress: 300,
         effects: { 
-          attack: 12, 
-          defense: 6, 
-          health: 120,
           'MP.perSecond': 0.15, // 法力值回复速度增加0.15/秒
           'QB.max': 15, // 气血值上限增加15
           'QB.perSecond': 0.08 // 气血值回复速度增加0.08/秒

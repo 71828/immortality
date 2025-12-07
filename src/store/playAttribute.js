@@ -7,7 +7,12 @@ import { task as taskStore } from './task';
 import { log as logStore } from './log';
 
 export const playAttribute = defineStore('playAttribute', () => {
-  // 修为表 - 定义各阶段各等级的修为上限
+
+    // 日志标志位，避免重复添加日志
+  const logFlags = ref({
+    experienceFull: false // 修为达到上限日志是否已添加
+  });
+    // 修为表 - 定义各阶段各等级的修为上限
   const expStages = ref([{
     levels: [{
       name: 'Mortal Body',
@@ -44,10 +49,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     stageLevel: 0
   });
   
-  // 日志标志位，避免重复添加日志
-  const logFlags = ref({
-    experienceFull: false // 修为达到上限日志是否已添加
-  });
+
 
   const Life = ref({
     name: 'Longevity',
@@ -109,7 +111,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     name: 'Spirit',
     val: 0,
     max: 0,
-    visable: false,
+    visable: true,
     haveMax: false
   });
 
@@ -128,7 +130,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     name: 'Charisma',
     val: 0,
     max: 0,
-    visable: false,
+    visable: true,
     haveMax: false
   });
 
@@ -147,7 +149,7 @@ export const playAttribute = defineStore('playAttribute', () => {
     name: 'Wisdom',
     val: 0,
     max: 0,
-    visable: false,
+    visable: true,
     haveMax: false
   });
 
@@ -171,7 +173,7 @@ export const playAttribute = defineStore('playAttribute', () => {
   });
 
   /**
-   * 运势属性 (Luck)
+   *  神识 (  )
    * 影响角色的随机事件和机遇
    * 
    * 属性说明：
@@ -182,7 +184,7 @@ export const playAttribute = defineStore('playAttribute', () => {
    * - haveMax: 是否有最大值限制
    */
   const SP = ref({
-    name: 'Luck',
+    name: '神识',
     val: 0,
     max: 0,
     visable: false,
@@ -237,11 +239,8 @@ export const playAttribute = defineStore('playAttribute', () => {
    * @param {number} val - 变化的值
    * @returns {Error|null} - 可能的错误信息，成功则返回null
    */
-  function setAttr(type, attrTarget, keyTarget, val) {
-    // 如果是每帧变化，将值除以100（因为每秒100帧）
-    if (type === 'frame') {
-      val = val / 100;
-    }
+  function setAttr( attrTarget, keyTarget, val) {
+
 
     // 特殊处理修为变化
     if (attrTarget === 'EXP' && keyTarget === 'val') {

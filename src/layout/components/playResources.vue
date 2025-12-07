@@ -5,6 +5,7 @@ import { useMainStore } from '@/store/store'
 const playAttr = playAttribute()
 
 const list1 = ['QB', 'EP', 'MP']
+const list2 = ['CHA', 'SE', 'CP']
 
 
 </script>
@@ -25,6 +26,18 @@ const list1 = ['QB', 'EP', 'MP']
                             <div class="line-progress" :class="[item]"
                                 :style="{ width: Number(((playAttr[item].val / playAttr[item].max) * 100)) + '%' }">
                             </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- 显示魅力、神识、悟性属性，不以进度条形式展示 -->
+            <div class="list no-progress">
+                <template v-for="(item, index) in list2" :key="index">
+                    <div class="item" v-if="playAttr[item].visable">
+                        <div class="cell">
+                            <div class="label">{{ playAttr[item].name }}：</div>
+                            <div class="value">{{ Math.floor(playAttr[item].val) }}</div>
                         </div>
                     </div>
                 </template>
@@ -53,7 +66,7 @@ const list1 = ['QB', 'EP', 'MP']
         .cell {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            
             color: #e6edf3;
             width: 100%;
             min-width: 0;
@@ -78,11 +91,11 @@ const list1 = ['QB', 'EP', 'MP']
 
         .line {
             background-color: var(--el-border-color-light);
-            height: 4px;
+            height: 2px;
             position: relative;
             z-index: 1;
             border-radius: 2px;
-            margin-top: 8px;
+            margin-top: 4px;
             overflow: hidden;
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
 
@@ -105,6 +118,28 @@ const list1 = ['QB', 'EP', 'MP']
                     background: #2c5afb;
                 }
             }
+        }
+    }
+}
+
+/* 没有进度条的列表样式 */
+.list.no-progress {
+    padding: 0 16px 16px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    
+    .item {
+        margin-bottom: 8px;
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+        
+        .cell {
+            margin-bottom: 0;
+        }
+        
+        .line {
+            display: none;
         }
     }
 }

@@ -30,7 +30,7 @@ const isExecution = computed(() => {
 });
 </script>
 <template>
-    <div class="">
+    <div class="action-container">
         <TransitionGroup name="action-item" tag="div" class="aciton-list">
             <!-- 动作列表 -->
             <div 
@@ -81,8 +81,15 @@ const isExecution = computed(() => {
     </div>
 </template>
 <style lang="scss" scoped>
+.action-container {
+    width: 100%;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .aciton-list {
-    min-height: 500px;
     overflow: visible;
     display: flex;
     flex-wrap: wrap;
@@ -106,7 +113,7 @@ const isExecution = computed(() => {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    min-height: 120px;
+
 }
 
 .item:hover {
@@ -149,7 +156,7 @@ const isExecution = computed(() => {
     font-weight: 500;
     color: #58a6ff;
     background-color: rgba(88, 166, 255, 0.1);
-    padding: 2px 8px;
+    padding: 2px 10px;
     border-radius: 12px;
     white-space: nowrap;
 }

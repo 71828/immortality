@@ -3,7 +3,7 @@ import ElementPlus from 'element-plus'
 import { createPinia } from 'pinia'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
-const pinia = createPinia()
+const pinia = createPinia({ devtools: false })
 import 'element-plus/dist/index.css'
 import './style.scss'
 import 'element-plus/theme-chalk/dark/css-vars.css'
