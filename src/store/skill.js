@@ -3,15 +3,16 @@ import { ref, computed } from 'vue'
 import { getSkillConfigById } from '@/config/skillConfigs'
 // 导入属性store
 import { playAttribute } from './playAttribute'
+import Decimal from 'decimal.js'
 
 export const skillStore = defineStore('skill', () => {
     // 已学习的功法列表 - 存储功法ID和各层级进度
-    const skills = ref([ ])
+    const skills = ref([])
     //自动修炼功法列表 - 存储自动修炼的功法ID
     const autoCultivateSkills = ref([])
     //自动修炼功法数量上限
     const maxAutoCultivateSkills = ref(1)
-    const cultivationSpeed = ref(1.0)
+    const cultivationSpeed = ref(10.0)
     //添加功法到skills
     function addSkill(skillId) {
         const skillConfig = getSkillConfigById(skillId)
@@ -23,12 +24,16 @@ export const skillStore = defineStore('skill', () => {
                 type: skillConfig.type,
                 state: 'unlocked',
                 currentLayer: 0,
-                layersProgress: skillConfig.layers.map(layer => ({
+                layers: skillConfig.layers.map(layer => ({
                     layer: layer.layer,
                     progress: 0,
-                    maxProgress: layer.maxProgress
-                }))
+                    maxProgress: layer.maxProgress,
+                    effects: layer.effects,
+                })),
+                
             })
+            console.log(skills.value);
+
         }
     }
     //添加功法对象到autoCultivateSkills
@@ -60,25 +65,27 @@ export const skillStore = defineStore('skill', () => {
         }
         //判断功法点是否足够
         const { SPT } = playAttribute()
-   
-        
         if (SPT.val < 1) {
             return
         }
         autoCultivateSkills.value.forEach(skill => {
             if (skill) {
-                const layerProgress = skill.layersProgress[skill.currentLayer]
+                const layerProgress = skill.layers[skill.currentLayer]
                 // 检查是否已到最大层级
-                if (skill.currentLayer >= skill.layersProgress.length) {
+                if (skill.currentLayer >= skill.layers.length) {
                     skill.state = 'cultivated'
                     return
                 }
                 if (layerProgress.progress >= layerProgress.maxProgress) {
-                    layerProgress.progress=layerProgress.maxProgress
+
+                    layerProgress.progress = layerProgress.maxProgress
                     skill.currentLayer += 1
-                }else{
-                     layerProgress.progress +=  cultivationSpeed.value / fps
-                      SPT.val -=cultivationSpeed.value / fps
+                } else {
+                    const progressIncrement = new Decimal(cultivationSpeed.value).div(new Decimal(fps)).toNumber()
+
+                    
+                    layerProgress.progress = new Decimal(layerProgress.progress).add(progressIncrement).toNumber()
+                    SPT.val -= progressIncrement
                 }
 
 
@@ -89,13 +96,12 @@ export const skillStore = defineStore('skill', () => {
     addSkill(1)
     addSkill(2)
     // 自动修炼id1和id2功法
-    addAutoCultivateSkill(1)
 
     return {
         skills,
         cultivationSpeed,
         autoCultivateSkills,
-        maxAutoCultivateSkills, 
+        maxAutoCultivateSkills,
         addSkill,
         addAutoCultivateSkill,
         removeAutoCultivateSkill,

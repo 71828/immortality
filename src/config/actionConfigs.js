@@ -90,8 +90,8 @@ export const actionConfigurations = [
       executeLimit: 1,          // 只能执行1次
       executeCount: 0,          // 初始执行次数为0
       experience: 0,          // 初始动作修为为0
-      experiencePerSecond: 3,  // 每秒获得3点动作经验
-      maxExperience: 3,        // 当前等级经验上限为3
+      experiencePerSecond: 10,  // 每秒获得3点动作经验
+      maxExperience: 1,        // 当前等级经验上限为3
       levelUpRate: 0.2,        // 每次升级经验上限增加20%
       efficiency: 100,         // 执行效率100%
       logForId: 1,             // 日志ID为1

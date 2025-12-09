@@ -1,11 +1,11 @@
 <script setup>
-// 洞府组件
+// Cave Component
 import { ref } from 'vue'
 
-// 示例洞府数据
+// Sample cave data
 const caveData = ref({
-  name: '无名洞府',
-  location: '青云山脉',
+  name: 'Nameless Cave',
+  location: 'Azure Cloud Mountains',
   level: 1,
   cultivationSpeed: 1.0,
   resources: {
@@ -15,23 +15,23 @@ const caveData = ref({
   facilities: [
     {
       id: 1,
-      name: '修炼室',
+      name: 'Cultivation Room',
       level: 1,
-      description: '提供修炼场所，提升修炼速度',
+      description: 'Provides cultivation space, increases cultivation speed',
       upgradeCost: { spiritStone: 100 }
     },
     {
       id: 2,
-      name: '丹房',
+      name: 'Alchemy Room',
       level: 1,
-      description: '用于炼制丹药',
+      description: 'Used for refining pills',
       upgradeCost: { spiritStone: 150 }
     },
     {
       id: 3,
-      name: '炼器室',
+      name: 'Artifact Refining Room',
       level: 1,
-      description: '用于炼制法宝',
+      description: 'Used for refining magical artifacts',
       upgradeCost: { spiritStone: 200 }
     }
   ]
@@ -40,38 +40,38 @@ const caveData = ref({
 
 <template>
   <div class="cave-container">
-    <!-- 洞府基本信息 -->
+    <!-- Basic Cave Information -->
     <div class="cave-info-section">
       <h3>{{ caveData.name }}</h3>
       <div class="info-row">
         <div class="info-item">
-          <span class="label">所在地:</span>
+          <span class="label">Location:</span>
           <span class="value">{{ caveData.location }}</span>
         </div>
         <div class="info-item">
-          <span class="label">等级:</span>
+          <span class="label">Level:</span>
           <span class="value">{{ caveData.level }}</span>
         </div>
         <div class="info-item">
-          <span class="label">修炼速度:</span>
+          <span class="label">Cultivation Speed:</span>
           <span class="value">{{ caveData.cultivationSpeed }}x</span>
         </div>
       </div>
       <div class="resources-row">
         <div class="resource-item">
-          <span class="label">灵气:</span>
+          <span class="label">Qi:</span>
           <span class="value">{{ caveData.resources.qi }}</span>
         </div>
         <div class="resource-item">
-          <span class="label">灵石:</span>
+          <span class="label">Spirit Stones:</span>
           <span class="value">{{ caveData.resources.spiritStone }}</span>
         </div>
       </div>
     </div>
 
-    <!-- 洞府设施列表 -->
+    <!-- Cave Facilities List -->
     <div class="facilities-section">
-      <h4>洞府设施</h4>
+      <h4>Cave Facilities</h4>
       <div class="facilities-grid">
         <div 
           v-for="facility in caveData.facilities" 
@@ -80,15 +80,15 @@ const caveData = ref({
         >
           <div class="facility-header">
             <h5>{{ facility.name }}</h5>
-            <div class="facility-level">等级 {{ facility.level }}</div>
+            <div class="facility-level">Level {{ facility.level }}</div>
           </div>
           <div class="facility-description">{{ facility.description }}</div>
           <div class="facility-upgrade">
             <div class="upgrade-cost">
-              <span>升级费用:</span>
-              <span>{{ facility.upgradeCost.spiritStone }} 灵石</span>
+              <span>Upgrade Cost:</span>
+              <span>{{ facility.upgradeCost.spiritStone }} Spirit Stones</span>
             </div>
-            <button class="upgrade-btn">升级</button>
+            <button class="upgrade-btn">Upgrade</button>
           </div>
         </div>
       </div>
